@@ -64,7 +64,7 @@
                         <div class="glass-card">
                             <h3 class="card-subtitle">💬 Direct Ask AI</h3>
                             <p class="guide-item-text">
-                                Ask any farming, crop guide, simulator, fertilizer, pest, harvest, or disaster question and get an instant answer through AI with local fallback support.
+                                Ask any farming, crop guide, simulator, fertilizer, pest, harvest, or disaster question and get an instant answer through the Google AI Search module.
                             </p>
                         </div>
                         <div class="glass-card">
@@ -165,7 +165,7 @@
                     <section class="glass-card ask-input-panel">
                         <h2 class="card-title">💬 Ask AI</h2>
                         <p class="guide-item-text" style="margin-bottom: 1rem; color: var(--text-muted);">
-                            Ask a direct question about crop production, fertilizer, pests, irrigation, harvesting, simulator decisions, or emergency response.
+                            Ask a direct question about crop production, fertilizer, pests, irrigation, harvesting, simulator decisions, or emergency response. Answers come from the Google AI Search module.
                         </p>
 
                         <div class="ask-quick-row" aria-label="Example Ask AI questions">
@@ -239,6 +239,18 @@
                                 <div class="detail-section">
                                     <h4>Related Crops</h4>
                                     <ul id="ask-crops-list" class="detail-list"></ul>
+                                </div>
+                            </div>
+
+                            <div class="rec-grid-2" style="margin-top: 1rem;">
+                                <div class="detail-section">
+                                    <h4>Search Queries</h4>
+                                    <ul id="ask-search-list" class="detail-list"></ul>
+                                </div>
+
+                                <div class="detail-section">
+                                    <h4>Grounding Sources</h4>
+                                    <ul id="ask-citations-list" class="detail-list"></ul>
                                 </div>
                             </div>
 
@@ -1242,6 +1254,8 @@
             const askSourceBadge = document.getElementById('ask-source-badge');
             const askActionsList = document.getElementById('ask-actions-list');
             const askCropsList = document.getElementById('ask-crops-list');
+            const askSearchList = document.getElementById('ask-search-list');
+            const askCitationsList = document.getElementById('ask-citations-list');
             const askSafetyText = document.getElementById('ask-safety-text');
 
             function renderAskList(listEl, items, fallbackText, icon, color) {
@@ -1295,10 +1309,12 @@
 
                     const data = await res.json();
                     askAnswerText.textContent = data.answer;
-                    askSourceBadge.textContent = data.source === 'gemini' ? 'Gemini AI Answer' : 'Local Knowledge Answer';
+                    askSourceBadge.textContent = 'Google Search AI Answer';
                     askSafetyText.textContent = data.safety_note;
                     renderAskList(askActionsList, data.suggested_actions, 'Ask a more specific question with crop, land size, location, and season.', '✓', 'var(--primary)');
                     renderAskList(askCropsList, data.related_crops, 'No specific crop detected.', '🌱', 'var(--accent)');
+                    renderAskList(askSearchList, data.search_queries, 'No search query metadata returned.', '🔎', 'var(--secondary)');
+                    renderAskList(askCitationsList, data.citations, 'No citation metadata returned.', '🔗', 'var(--primary)');
 
                     askSpinner.style.display = 'none';
                     askContent.style.display = 'flex';

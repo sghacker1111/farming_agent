@@ -49,7 +49,17 @@ async def read_root(request: Request):
         "market_price": "medium",
         "harvested": False
     }
-    api_key_configured = bool(os.environ.get("GEMINI_API_KEY"))
+    api_key_configured = bool(
+        os.environ.get("GEMINI_API_KEY")
+        or os.environ.get("GOOGLE_API_KEY")
+        or (
+            os.environ.get("GOOGLE_CLOUD_PROJECT")
+            and (
+                os.environ.get("GOOGLE_GENAI_USE_VERTEXAI", "").strip().lower() in {"1", "true", "yes", "on"}
+                or os.environ.get("GOOGLE_GENAI_USE_ENTERPRISE", "").strip().lower() in {"1", "true", "yes", "on"}
+            )
+        )
+    )
     return templates.TemplateResponse(
         request=request,
         name="index.html",
@@ -134,6 +144,11 @@ async def ask_ai_endpoint(request: AskAIRequest):
     try:
         answer = get_ask_ai_answer(request)
         return answer
+    except RuntimeError as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=str(e)
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

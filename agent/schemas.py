@@ -109,7 +109,9 @@ class AskAIResponse(BaseModel):
     suggested_actions: List[str] = Field(..., description="Short follow-up actions the farmer can take")
     related_crops: List[str] = Field(..., description="Crop names found or relevant to the answer")
     safety_note: str = Field(..., description="Important safety or uncertainty note")
-    source: Literal["gemini", "local_fallback"] = Field(..., description="Whether the answer came from Gemini or local fallback logic")
+    source: Literal["gemini_search"] = Field(..., description="The Google AI/Search module used for the answer")
+    citations: List[str] = Field(default_factory=list, description="Grounding citations returned by Google Search")
+    search_queries: List[str] = Field(default_factory=list, description="Google Search queries used by the AI module")
 
 
 class DisasterIncident(BaseModel):

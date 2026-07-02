@@ -54,9 +54,11 @@ Outputs:
 - Suggested actions
 - Related crops
 - Safety note
-- Answer source: Gemini AI or local knowledge fallback
+- Answer source: Google Search AI module
+- Google Search queries when returned by the API
+- Grounding source citations when returned by the API
 
-If `GEMINI_API_KEY` is configured, Ask AI uses Gemini for flexible direct answers. If no API key is available, it still answers instantly using the local crop guide database and Disaster AI fallback logic.
+Ask AI uses Gemini with Google Search grounding. It requires either a Gemini API key (`GEMINI_API_KEY` or `GOOGLE_API_KEY`) or Google Cloud Vertex AI service-account authentication (`GOOGLE_GENAI_USE_VERTEXAI=true` with `GOOGLE_CLOUD_PROJECT`). If no Google AI credentials are configured, the Ask AI endpoint returns an error instead of generating a local fallback answer.
 
 ### 3. Farming Simulator
 
@@ -264,7 +266,7 @@ agent/
   gemini_brain.py     Gemini decision engine for simulator actions
   engine.py           Decision coordinator combining Gemini and safety rules
   simulation.py       Farm state transition simulator
-  ask_ai.py           Direct Ask AI chat engine with Gemini and local fallback
+  ask_ai.py           Direct Ask AI chat engine with Gemini and Google Search grounding
   crop_guide.py       Crop guide loading, lookup, and search
   recommendation.py   Crop recommendation engine with Gemini and fallback logic
   disaster.py         Disaster AI emergency response engine
@@ -383,11 +385,19 @@ cp .env.example .env
 Example `.env`:
 
 ```env
+# Local developer API key option
 GEMINI_API_KEY=your_gemini_api_key_here
+
+# Google Cloud / Vertex AI option
+GOOGLE_GENAI_USE_VERTEXAI=false
+GOOGLE_CLOUD_PROJECT=your_google_cloud_project_id
+GOOGLE_CLOUD_LOCATION=us-central1
+GEMINI_MODEL=gemini-2.5-flash
+
 PORT=8080
 ```
 
-If `GEMINI_API_KEY` is missing or empty, the app still works using deterministic fallback engines.
+If Google AI credentials are missing, the simulator, crop recommendation, crop guide, and Disaster AI modules still work using deterministic fallback engines. The Ask AI direct chat requires `GEMINI_API_KEY`, `GOOGLE_API_KEY`, or Vertex AI service-account authentication because it uses the Google AI Search module.
 
 ## Run the Web App
 
@@ -459,6 +469,8 @@ Response includes:
 - related_crops
 - safety_note
 - source
+- citations
+- search_queries
 
 ### Agent Decision
 
@@ -633,21 +645,30 @@ docker run -p 8080:8080 --env-file .env agrimind-agent
 ```bash
 gcloud config set project YOUR_PROJECT_ID
 
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com aiplatform.googleapis.com
+
 gcloud run deploy agrimind-agent \
   --source . \
   --region asia-south1 \
   --allow-unauthenticated \
-  --set-env-vars PORT=8080
+  --set-env-vars GOOGLE_GENAI_USE_VERTEXAI=true,GOOGLE_CLOUD_PROJECT=YOUR_PROJECT_ID,GOOGLE_CLOUD_LOCATION=us-central1,GEMINI_MODEL=gemini-2.5-flash
 ```
 
-If using Gemini in production, configure `GEMINI_API_KEY` as a secret or secure environment variable.
+Cloud Run provides the `PORT` environment variable automatically, so do not set `PORT` manually during deployment.
+
+For API-key deployment, configure `GEMINI_API_KEY` or `GOOGLE_API_KEY` as a secret or secure environment variable instead. For service-account deployment, grant the Cloud Run runtime service account `roles/aiplatform.user`.
 
 ## Environment Variables
 
 | Variable | Required | Description |
 | --- | --- | --- |
-| `GEMINI_API_KEY` | No | Enables Gemini-powered decision and recommendation generation. The app falls back to rules when missing. |
-| `PORT` | No | Server port. Defaults to `8080`. |
+| `GEMINI_API_KEY` | Required for Ask AI when not using Vertex AI | Enables Gemini-powered decision generation, recommendations, Disaster AI, and Ask AI Google Search grounding. Non-chat modules fall back to rules when missing. |
+| `GOOGLE_API_KEY` | Optional alternative API key | Alternative Google AI API key name used by the GenAI SDK. |
+| `GOOGLE_GENAI_USE_VERTEXAI` | Required for Cloud Run service-account Ask AI | Set to `true` to use Google Cloud Vertex AI credentials instead of an API key. |
+| `GOOGLE_CLOUD_PROJECT` | Required with `GOOGLE_GENAI_USE_VERTEXAI=true` | Google Cloud project ID used by Vertex AI. |
+| `GOOGLE_CLOUD_LOCATION` | No | Vertex AI location. Defaults to `us-central1` for the app. |
+| `GEMINI_MODEL` | No | Gemini model used by Ask AI. Defaults to `gemini-2.5-flash`. |
+| `PORT` | No for local only | Server port. Defaults to `8080`; Cloud Run sets this automatically. |
 
 ## Safety Notes
 
