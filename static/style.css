@@ -639,8 +639,8 @@ footer {
     }
 }
 
-/* Crop Guide & Recommendation Layouts */
-.guide-layout, .recommendation-layout {
+/* Crop Guide, Home & Recommendation Layouts */
+.home-layout, .guide-layout, .recommendation-layout {
     display: flex;
     flex-direction: column;
     gap: 2rem;

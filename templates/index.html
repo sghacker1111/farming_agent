@@ -39,13 +39,114 @@
 
     <div class="app-container">
         <nav class="tab-nav" aria-label="Main Navigation Tabs">
-            <button class="tab-btn active" data-tab="simulator">🚜 Farming Simulator</button>
+            <button class="tab-btn active" data-tab="home">🏠 Home</button>
+            <button class="tab-btn" data-tab="simulator">🚜 Farming Simulator</button>
             <button class="tab-btn" data-tab="guide">📖 Crop Farming Guide</button>
             <button class="tab-btn" data-tab="recommendation">💡 Customized Recommendation</button>
         </nav>
 
         <div class="tab-content-container">
-            <div id="tab-simulator" class="tab-content active">
+            <!-- Tab 0: Home -->
+            <div id="tab-home" class="tab-content active">
+                <main class="home-layout">
+                    <!-- Welcome Hero Card -->
+                    <section class="glass-card primary-border" style="margin-bottom: 2rem; width: 100%;">
+                        <h2 class="card-title" style="color: var(--primary); font-size: 1.8rem; margin-bottom: 0.5rem;">🌾 welcome to AgriMind Decision & Instruction Portal</h2>
+                        <p class="guide-item-text" style="font-size: 1.1rem; color: var(--text-main); margin-bottom: 0.5rem;">
+                            Empowering modern farming with intelligent simulation, customized agronomy guidelines, and scaled safety controllers.
+                        </p>
+                    </section>
+
+                    <!-- Main Pillars of AgriMind -->
+                    <div class="results-grid-3" style="margin-bottom: 2rem;">
+                        <div class="glass-card">
+                            <h3 class="card-subtitle">🚜 Interactive Simulator</h3>
+                            <p class="guide-item-text">
+                                Predict crop growth, manage water resources, track soil degradation, and test what-if scenarios day by day using rule-based and AI-driven decision engines.
+                            </p>
+                        </div>
+                        <div class="glass-card">
+                            <h3 class="card-subtitle">📖 Crop Farming Guides</h3>
+                            <p class="guide-item-text">
+                                Get comprehensive instructions for <strong>21 crops</strong>. Learn optimal sowing times, spacing, organic/chemical fertilizer mixes, and post-harvest steps.
+                            </p>
+                        </div>
+                        <div class="glass-card">
+                            <h3 class="card-subtitle">💡 Scaled Recommender</h3>
+                            <p class="guide-item-text">
+                                Scale seed quantities, manure, and nitrogen-phosphorus-potassium requirements dynamically to your exact acreage (supporting Ropani, Katha, Bigha, and Hectares).
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Crops Covered Section -->
+                    <section class="glass-card" style="margin-bottom: 2rem; width: 100%;">
+                        <h2 class="card-title">🌱 Supported Crops List (21 Varieties)</h2>
+                        <div class="results-grid-3" style="gap: 1.5rem; margin-top: 1rem;">
+                            <div>
+                                <h4 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.05rem;">🌾 Cereals</h4>
+                                <ul style="list-style: none; padding: 0;" class="detail-list">
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Rice / Paddy</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Maize</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Wheat</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.05rem;">🥔 Vegetables</h4>
+                                <ul style="list-style: none; padding: 0;" class="detail-list">
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Potato</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Tomato</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Cauliflower</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Cabbage</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Onion</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Cucumber</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Pumpkin</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.05rem;">🌶️ Spices & Others</h4>
+                                <ul style="list-style: none; padding: 0;" class="detail-list">
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Garlic</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Ginger</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Turmeric</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Chili</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.05rem;">🌱 Legumes & Oilseeds</h4>
+                                <ul style="list-style: none; padding: 0;" class="detail-list">
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Mustard</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Lentil</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Soybean</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.05rem;">🍎 Fruits</h4>
+                                <ul style="list-style: none; padding: 0;" class="detail-list">
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Banana</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Mango</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Orange</li>
+                                    <li class="detail-item"><span class="bullet-icon" style="color:var(--primary);">✓</span> Apple</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Safety Warnings -->
+                    <section class="glass-card warning-border" style="width: 100%;">
+                        <h2 class="card-title text-warn">⚠️ Critical Safety & Local Disclaimer</h2>
+                        <p class="guide-item-text" style="margin-top: 0.5rem;">
+                            Fertilizer quantities, seed rates, and irrigation cycles recommended by this app are calculated based on national averages. <strong>Exact fertilizer doses and pesticide inputs must always depend on localized soil tests, crop variety, and climate conditions.</strong>
+                        </p>
+                        <p class="guide-item-text" style="margin-top: 0.5rem;">
+                            Always consult your local agriculture officer or cooperative before large-scale application, and wear protective equipment (gloves, mask) when handling agrochemicals.
+                        </p>
+                    </section>
+                </main>
+            </div>
+
+            <!-- Tab 1: Simulator -->
+            <div id="tab-simulator" class="tab-content">
         <main>
             <!-- Farm State Inputs Column -->
             <section class="glass-card" aria-label="Farm State Inputs">
