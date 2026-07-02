@@ -43,6 +43,7 @@
             <button class="tab-btn" data-tab="simulator">🚜 Farming Simulator</button>
             <button class="tab-btn" data-tab="guide">📖 Crop Farming Guide</button>
             <button class="tab-btn" data-tab="recommendation">💡 Customized Recommendation</button>
+            <button class="tab-btn" data-tab="disaster">🆘 Disaster AI</button>
         </nav>
 
         <div class="tab-content-container">
@@ -58,7 +59,7 @@
                     </section>
 
                     <!-- Main Pillars of AgriMind -->
-                    <div class="results-grid-3" style="margin-bottom: 2rem;">
+                    <div class="results-grid-4" style="margin-bottom: 2rem;">
                         <div class="glass-card">
                             <h3 class="card-subtitle">🚜 Interactive Simulator</h3>
                             <p class="guide-item-text">
@@ -75,6 +76,12 @@
                             <h3 class="card-subtitle">💡 Scaled Recommender</h3>
                             <p class="guide-item-text">
                                 Scale seed quantities, manure, and nitrogen-phosphorus-potassium requirements dynamically to your exact acreage (supporting Ropani, Katha, Bigha, and Hectares).
+                            </p>
+                        </div>
+                        <div class="glass-card">
+                            <h3 class="card-subtitle">🆘 Disaster AI</h3>
+                            <p class="guide-item-text">
+                                Emergency Response & Disaster Assistant for floods, earthquakes, cyclones, road accidents, and landslides. Farmers can quickly see shelter options, safer road guidance, medical contacts, and emergency supply needs.
                             </p>
                         </div>
                     </div>
@@ -498,7 +505,7 @@
             <!-- Output Report -->
             <section class="glass-card" id="rec-results-panel">
                 <h2 class="card-title">💡 Customized Agronomist Plan</h2>
-                
+
                 <div id="rec-placeholder" class="results-placeholder">
                     <div class="placeholder-icon">🌱</div>
                     <p>Input your farm details and trigger the agronomist recommender to generate a tailored report.</p>
@@ -570,6 +577,129 @@
                     <div style="margin-top: 1rem;" class="explanation-section">
                         <h4>Agronomist Assessment Details</h4>
                         <p id="rec-val-explanation"></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Tab 4: Disaster AI Emergency Response & Disaster Assistant -->
+    <div id="tab-disaster" class="tab-content">
+        <main class="recommendation-layout">
+            <!-- Disaster Inputs Form -->
+            <section class="glass-card">
+                <h2 class="card-title">🆘 Disaster AI</h2>
+                <p class="guide-item-text" style="margin-bottom: 1rem; color: var(--text-muted);">
+                    Emergency Response & Disaster Assistant for the Agents for Good track. Generate a practical safety plan for shelter options, road access warnings, medical help, emergency supplies, and immediate next steps.
+                </p>
+                <div class="emergency-quick-grid" aria-label="Emergency response coverage">
+                    <div class="emergency-chip"><span>🏠</span> Shelters</div>
+                    <div class="emergency-chip"><span>🛣️</span> Roads</div>
+                    <div class="emergency-chip"><span>🏥</span> Medical</div>
+                    <div class="emergency-chip"><span>📦</span> Supplies</div>
+                </div>
+                <form id="disaster-form">
+                    <div class="form-group" style="margin-bottom: 1.25rem;">
+                        <label for="disaster-type">Emergency/Disaster Type</label>
+                        <select id="disaster-type" required style="width: 100%;">
+                            <option value="flood">🌊 Flood / Inundation</option>
+                            <option value="earthquake">🫨 Earthquake / Tremors</option>
+                            <option value="cyclone">🌀 Cyclone / High Wind Storms</option>
+                            <option value="road_accident">🚗 Road Accident / Collision</option>
+                            <option value="landslide">⛰️ Landslide / Rockfall</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1.25rem;">
+                        <label for="disaster-location">Current Location</label>
+                        <input type="text" id="disaster-location" value="Kathmandu" placeholder="e.g. Kathmandu, Pokhara, Lalitpur, Kavre..." required style="width: 100%;">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1.25rem; display: flex; flex-direction: row; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="disaster-medical" style="width: auto; margin-right: 0.25rem;">
+                        <label for="disaster-medical" style="margin-bottom: 0; cursor: pointer; display: flex; align-items: center; gap: 0.25rem; font-size: 0.9rem;">🚨 Immediate Medical Emergency Assistance Required</label>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="disaster-supplies">Supplies Currently Available (Optional)</label>
+                        <input type="text" id="disaster-supplies" placeholder="e.g. dry food, first-aid box, no water..." style="width: 100%;">
+                    </div>
+
+                    <button type="button" id="btn-get-disaster-assist" class="btn-primary" style="width: 100%;">
+                        <span>🆘</span> Get Emergency Response Plan
+                    </button>
+                    <p class="emergency-note">
+                        For immediate danger, call local emergency services first. This assistant supports quick planning and should be checked against official responder updates.
+                    </p>
+                </form>
+            </section>
+
+            <!-- Disaster Output Report -->
+            <section class="glass-card" id="disaster-results-panel">
+                <h2 class="card-title">📋 Emergency Action Report</h2>
+
+                <div id="disaster-placeholder" class="results-placeholder">
+                    <div class="placeholder-icon">🆘</div>
+                    <p>Select the emergency type and location to generate a Disaster AI action guide for shelters, roads, medical help, and supplies.</p>
+                </div>
+
+                <div id="disaster-spinner" class="spinner-container" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Disaster AI is compiling shelter options, road warnings, medical contacts, and emergency supplies...</p>
+                </div>
+
+                <div id="disaster-content" class="results-container" style="display: none;">
+                    <div id="disaster-banner" class="action-banner action-pest_control" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3);">
+                        <div class="action-info">
+                            <h3>Emergency Status Summary</h3>
+                            <div id="disaster-val-summary" class="action-val" style="font-size: 0.95rem; font-weight: normal; margin-top: 0.25rem; text-transform: none; color: #fca5a5;">-</div>
+                        </div>
+                    </div>
+
+                    <div class="rec-grid-2" style="margin-top: 1rem; width: 100%;">
+                        <div class="detail-section">
+                            <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 0.5rem;">🏡 Safe Shelters Nearby</h4>
+                            <ul id="disaster-val-shelters" class="detail-list">
+                                <!-- Injected -->
+                            </ul>
+                        </div>
+
+                        <div class="detail-section">
+                            <h4 style="color: #f87171; font-size: 0.95rem; margin-bottom: 0.5rem;">🛣️ Road & Access Guidance</h4>
+                            <ul id="disaster-val-roads" class="detail-list">
+                                <!-- Injected -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="rec-grid-2" style="margin-top: 1rem; width: 100%;">
+                        <div class="detail-section">
+                            <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 0.5rem;">🏥 Medical & First-Aid Centers</h4>
+                            <ul id="disaster-val-medical" class="detail-list">
+                                <!-- Injected -->
+                            </ul>
+                        </div>
+
+                        <div class="detail-section">
+                            <h4 style="color: var(--accent); font-size: 0.95rem; margin-bottom: 0.5rem;">📦 Vital Emergency Supplies Needed</h4>
+                            <ul id="disaster-val-supplies" class="detail-list">
+                                <!-- Injected -->
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem; width: 100%;" class="detail-section">
+                        <h4 style="color: var(--primary); font-size: 0.95rem; margin-bottom: 0.5rem;">🏃 Immediate Action Steps</h4>
+                        <ol id="disaster-val-steps" style="padding-left: 1.2rem; color: #d1d5db; line-height: 1.6; font-size: 0.9rem;">
+                            <!-- Injected -->
+                        </ol>
+                    </div>
+
+                    <div style="margin-top: 1rem; width: 100%;" class="detail-section">
+                        <h4 style="color: #f87171; font-size: 0.95rem; margin-bottom: 0.5rem;">📞 Emergency Contacts & Hotlines</h4>
+                        <ul id="disaster-val-contacts" class="detail-list">
+                            <!-- Injected -->
+                        </ul>
                     </div>
                 </div>
             </section>
@@ -1000,6 +1130,112 @@
             }
 
             btnGetRec.addEventListener('click', fetchRecommendation);
+
+            // Disaster Assistant Logic
+            const btnGetDisaster = document.getElementById('btn-get-disaster-assist');
+            const disasterPlaceholder = document.getElementById('disaster-placeholder');
+            const disasterSpinner = document.getElementById('disaster-spinner');
+            const disasterContent = document.getElementById('disaster-content');
+
+            async function fetchDisasterAssist() {
+                disasterContent.style.display = 'none';
+                disasterPlaceholder.style.display = 'none';
+                disasterSpinner.style.display = 'flex';
+
+                const reqBody = {
+                    disaster_type: document.getElementById('disaster-type').value,
+                    location: document.getElementById('disaster-location').value,
+                    needs_medical: document.getElementById('disaster-medical').checked,
+                    current_supplies: document.getElementById('disaster-supplies').value
+                };
+
+                try {
+                    const res = await fetch('/disaster/assist', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(reqBody)
+                    });
+
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.detail || 'Error generating disaster response.');
+                    }
+
+                    const data = await res.json();
+
+                    // Populate DOM
+                    document.getElementById('disaster-val-summary').innerText = data.assessment_summary;
+
+                    // Shelters List
+                    const sheltersList = document.getElementById('disaster-val-shelters');
+                    sheltersList.innerHTML = '';
+                    data.safe_shelters.forEach(sh => {
+                        const li = document.createElement('li');
+                        li.className = 'detail-item';
+                        li.innerHTML = `<span class="bullet-icon" style="color:var(--primary);">🏡</span> <span>${sh}</span>`;
+                        sheltersList.appendChild(li);
+                    });
+
+                    // Roads List
+                    const roadsList = document.getElementById('disaster-val-roads');
+                    roadsList.innerHTML = '';
+                    data.safe_roads.forEach(rd => {
+                        const li = document.createElement('li');
+                        li.className = 'detail-item';
+                        li.innerHTML = `<span class="bullet-icon" style="color:#f87171;">🛣️</span> <span>${rd}</span>`;
+                        roadsList.appendChild(li);
+                    });
+
+                    // Medical Centers List
+                    const medicalList = document.getElementById('disaster-val-medical');
+                    medicalList.innerHTML = '';
+                    data.medical_help_centers.forEach(med => {
+                        const li = document.createElement('li');
+                        li.className = 'detail-item';
+                        li.innerHTML = `<span class="bullet-icon" style="color:var(--primary);">🏥</span> <span>${med}</span>`;
+                        medicalList.appendChild(li);
+                    });
+
+                    // Supplies Needed List
+                    const suppliesList = document.getElementById('disaster-val-supplies');
+                    suppliesList.innerHTML = '';
+                    data.emergency_supplies_needed.forEach(sp => {
+                        const li = document.createElement('li');
+                        li.className = 'detail-item';
+                        li.innerHTML = `<span class="bullet-icon" style="color:var(--accent);">📦</span> <span>${sp}</span>`;
+                        suppliesList.appendChild(li);
+                    });
+
+                    // Action Steps List (Ordered)
+                    const stepsList = document.getElementById('disaster-val-steps');
+                    stepsList.innerHTML = '';
+                    data.immediate_action_steps.forEach(st => {
+                        const li = document.createElement('li');
+                        li.style.marginBottom = '0.5rem';
+                        li.innerText = st;
+                        stepsList.appendChild(li);
+                    });
+
+                    // Emergency Contacts List
+                    const contactsList = document.getElementById('disaster-val-contacts');
+                    contactsList.innerHTML = '';
+                    data.emergency_contacts.forEach(cnt => {
+                        const li = document.createElement('li');
+                        li.className = 'detail-item';
+                        li.innerHTML = `<span class="bullet-icon" style="color:#f87171;">📞</span> <span>${cnt}</span>`;
+                        contactsList.appendChild(li);
+                    });
+
+                    disasterSpinner.style.display = 'none';
+                    disasterContent.style.display = 'flex';
+                } catch (err) {
+                    alert(err.message);
+                    disasterSpinner.style.display = 'none';
+                    disasterPlaceholder.style.display = 'block';
+                }
+            }
+
+            btnGetDisaster.addEventListener('click', fetchDisasterAssist);
         });
     </script>
 </body>

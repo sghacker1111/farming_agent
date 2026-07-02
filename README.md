@@ -20,6 +20,7 @@ In modern agricultural operations, farmers must continuously analyze a complex, 
 - **Safety-Critical Controller**: Prevents impossible actions, such as spending more capital than available or harvesting non-mature crops, and overrides unsafe AI suggestions.
 - **Crop Farming Guide**: Step-by-step guides for 21 crops covering growing methods, seed rates, spacing, fertilization, weed/pest/disease care, expected yield, and storage.
 - **Customized Recommendation Engine**: Dynamically scales quantities of seeds, compost, and chemical fertilizers to the exact land size and unit, customized by experience level and organic vs. chemical preference.
+- **Disaster AI - Emergency Response & Disaster Assistant**: Farmer-facing emergency planning for floods, earthquakes, cyclones, road accidents, and landslides, covering shelter options, road guidance, medical help, supplies, contacts, and immediate action steps.
 - **Nepal-Friendly Spacing & Units**: Supports local land units—**Ropani** (hills), **Katha** (Terai), **Bigha** (Terai), as well as standard Hectares and Square Meters.
 - **Structured LLM Outputs**: Leverages the official **Google GenAI SDK** (`google-genai`) to return typed Pydantic responses matching `AgentDecision` and `CropRecommendationResponse` schemas.
 - **Robust Fallback**: Functions completely offline/without an API key using local JSON databases and a priority-based deterministic scaling recommendation engine.
@@ -39,6 +40,7 @@ agrimind-agent/
 │   ├── gemini_brain.py     # Google GenAI SDK integration for decisions
 │   ├── crop_guide.py       # Crop guide matching and search algorithms
 │   ├── recommendation.py   # Scaled recommendation generator (Gemini + Fallback)
+│   ├── disaster.py         # Disaster AI emergency response assistant
 │   ├── engine.py           # Coordinator managing Gemini calls & safety overrides
 │   └── simulation.py       # State-transition simulation logic
 │
@@ -55,7 +57,8 @@ agrimind-agent/
 │   ├── __init__.py
 │   ├── test_agent_rules.py # Tests for possible actions, safety overrides, and fallback
 │   ├── test_api.py         # Tests for FastAPI endpoints (/health, /decide, /simulate)
-│   └── test_crop_guide_api.py # Tests for crop list, guides, search, and recommendation
+│   ├── test_crop_guide_api.py # Tests for crop list, guides, search, and recommendation
+│   └── test_disaster.py    # Tests for Disaster AI emergency response endpoint
 │
 ├── .env                    # Environment configuration file (secret)
 ├── .env.example            # Mock / reference env setup
@@ -183,6 +186,21 @@ pytest -v
          "experience_level": "beginner"
        }'
   ```
+
+### 4. Get Disaster AI Emergency Response Plan
+- **Endpoint**: `POST /disaster/assist`
+- **Request**:
+  ```bash
+  curl -X POST "http://localhost:8080/disaster/assist" \
+       -H "Content-Type: application/json" \
+       -d '{
+         "disaster_type": "flood",
+         "location": "Kathmandu, Nepal",
+         "needs_medical": true,
+         "current_supplies": "First aid kit and dry food"
+       }'
+  ```
+- **Response Includes**: shelter options, road access guidance, medical help centers, emergency supplies, immediate action steps, emergency contacts, and a safety summary.
 
 ---
 

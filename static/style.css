@@ -690,6 +690,24 @@ footer {
     }
 }
 
+.results-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+    .results-grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .results-grid-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
 .rec-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -749,6 +767,43 @@ footer {
     color: var(--primary);
 }
 
+.emergency-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.6rem;
+    margin: 0 0 1.5rem;
+}
+
+.emergency-chip {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.65rem 0.5rem;
+    border-radius: 10px;
+    border: 1px solid rgba(239, 68, 68, 0.18);
+    background: rgba(239, 68, 68, 0.08);
+    color: #fecaca;
+    font-family: var(--font-heading);
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.emergency-note {
+    margin-top: 1rem;
+    color: #fbbf24;
+    font-size: 0.82rem;
+    line-height: 1.45;
+}
+
+@media (max-width: 640px) {
+    .emergency-quick-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 /* Header Weather & Time Widget */
 .header-widget-container {
     display: flex;
@@ -795,5 +850,4 @@ footer {
 .widget-btn:hover {
     background: rgba(255, 255, 255, 0.1);
 }
-
 

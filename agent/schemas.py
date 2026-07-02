@@ -95,3 +95,24 @@ class CropRecommendationResponse(BaseModel):
     safety_note: str = Field(..., description="Critical agronomist safety warning")
     ai_explanation: str = Field(..., description="Synthesis explanation of how this custom advice was generated")
 
+
+class DisasterIncident(BaseModel):
+    disaster_type: Literal["flood", "earthquake", "cyclone", "road_accident", "landslide"] = Field(
+        ..., description="The type of emergency or natural disaster for Disaster AI to assess"
+    )
+    location: str = Field(..., description="The name of the location or area affected")
+    needs_medical: bool = Field(False, description="Whether immediate medical help is needed")
+    current_supplies: str = Field("", description="Supplies currently available locally")
+
+
+class DisasterResponse(BaseModel):
+    disaster_type: str = Field(..., description="The type of disaster")
+    location: str = Field(..., description="The area analyzed")
+    safe_shelters: List[str] = Field(..., description="Likely evacuation spots and shelter options nearby")
+    safe_roads: List[str] = Field(..., description="Road access guidance and route safety cautions")
+    medical_help_centers: List[str] = Field(..., description="Hospitals, clinics, and first-aid response spots")
+    emergency_supplies_needed: List[str] = Field(..., description="Vital emergency items recommended to obtain")
+    immediate_action_steps: List[str] = Field(..., description="Urgent step-by-step safety measures to take right now")
+    emergency_contacts: List[str] = Field(..., description="Critical emergency phone numbers and hotlines")
+    assessment_summary: str = Field(..., description="Summary explanation and advice from the AI assistant")
+
