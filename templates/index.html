@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriMind Agent - Smart Farming AI Decision Dashboard</title>
+    <meta name="description" content="AI-driven agronomist and decision-making system using Gemini and safety-critical rules.">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo-container">
+            <span class="logo-icon">🌱</span>
+            <h1>AgriMind Agent</h1>
+        </div>
+        <div>
+            {% if api_key_configured %}
+            <span id="api-status-badge" class="api-badge">
+                <span>🤖</span> Gemini Brain Active
+            </span>
+            {% else %}
+            <span id="api-status-badge" class="api-badge missing">
+                <span>⚠️</span> Rule-Based Fallback Mode
+            </span>
+            {% endif %}
+        </div>
+    </header>
+
+    <main>
+        <!-- Farm State Inputs Column -->
+        <section class="glass-card" aria-label="Farm State Inputs">
+            <h2 class="card-title">🚜 Farm State Parameters</h2>
+            <form id="farm-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="day">Day Count</label>
+                        <input type="number" id="day" name="day" min="0" value="{{ default_state.day }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="money">Capital/Cash ($)</label>
+                        <input type="number" id="money" name="money" min="0" value="{{ default_state.money }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="water_level">Water Level (%)</label>
+                        <input type="number" id="water_level" name="water_level" min="0" max="100" value="{{ default_state.water_level }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="soil_health">Soil Health (%)</label>
+                        <input type="number" id="soil_health" name="soil_health" min="0" max="100" value="{{ default_state.soil_health }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="pest_risk">Pest Risk (%)</label>
+                        <input type="number" id="pest_risk" name="pest_risk" min="0" max="100" value="{{ default_state.pest_risk }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="crop_stage">Crop Stage</label>
+                        <select id="crop_stage" name="crop_stage" required>
+                            <option value="seed" {% if default_state.crop_stage == 'seed' %}selected{% endif %}>Seed Stage</option>
+                            <option value="growing" {% if default_state.crop_stage == 'growing' %}selected{% endif %}>Growing</option>
+                            <option value="flowering" {% if default_state.crop_stage == 'flowering' %}selected{% endif %}>Flowering</option>
+                            <option value="mature" {% if default_state.crop_stage == 'mature' %}selected{% endif %}>Mature</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="weather">Current Weather</label>
+                        <select id="weather" name="weather" required>
+                            <option value="sunny" {% if default_state.weather == 'sunny' %}selected{% endif %}>Sunny</option>
+                            <option value="cloudy" {% if default_state.weather == 'cloudy' %}selected{% endif %}>Cloudy</option>
+                            <option value="rainy" {% if default_state.weather == 'rainy' %}selected{% endif %}>Rainy</option>
+                            <option value="drought" {% if default_state.weather == 'drought' %}selected{% endif %}>Drought</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="market_price">Market Price</label>
+                        <select id="market_price" name="market_price" required>
+                            <option value="low" {% if default_state.market_price == 'low' %}selected{% endif %}>Low</option>
+                            <option value="medium" {% if default_state.market_price == 'medium' %}selected{% endif %}>Medium</option>
+                            <option value="high" {% if default_state.market_price == 'high' %}selected{% endif %}>High</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <div class="switch-container">
+                            <label for="harvested">Crop Harvested & Stored</label>
+                            <label class="switch">
+                                <input type="checkbox" id="harvested" name="harvested" {% if default_state.harvested %}checked{% endif %}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" id="btn-decide" class="btn-secondary" title="Get recommended action for this state">
+                        <span>🧠</span> Get Decision
+                    </button>
+                    <button type="button" id="btn-simulate" class="btn-primary" title="Apply decision and step forward in time">
+                        <span>⚡</span> Run Simulation Step
+                    </button>
+                </div>
+                <div style="text-align: center; margin-top: 1rem;">
+                    <button type="button" id="btn-reset" class="btn-secondary" style="width: 100%;" title="Reset state to initial defaults">
+                        <span>🔄</span> Reset Parameters
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Agent Decisions Column -->
+        <section class="glass-card" id="results-panel" aria-label="Agent Decision Results">
+            <h2 class="card-title">💡 Agent Recommendation</h2>
+            
+            <!-- Default Placeholder -->
+            <div id="results-placeholder" class="results-placeholder">
+                <div class="placeholder-icon">🤖</div>
+                <p>Configure the farm parameters and trigger the agent's decision engine to view recommendations.</p>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loading-spinner" class="spinner-container">
+                <div class="spinner"></div>
+                <p>AgriMind Agent is analyzing farm variables...</p>
+            </div>
+
+            <!-- Decision Result Container (hidden initially) -->
+            <div id="results-content" class="results-container" style="display: none;">
+                <!-- Main Action Banner -->
+                <div id="action-banner" class="action-banner">
+                    <div class="action-info">
+                        <h3>Recommended Action</h3>
+                        <div id="action-value" class="action-val">-</div>
+                    </div>
+                    <div class="confidence-circle">
+                        <div id="confidence-value" class="confidence-val">-%</div>
+                        <div class="confidence-lbl">Confidence Score</div>
+                    </div>
+                </div>
+
+                <!-- Reasons & Risks Lists -->
+                <div class="details-grid">
+                    <div class="detail-section">
+                        <h4>Key Reasons</h4>
+                        <ul id="reasons-list" class="detail-list">
+                            <!-- Injected by JS -->
+                        </ul>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Associated Risks</h4>
+                        <ul id="risks-list" class="detail-list">
+                            <!-- Injected by JS -->
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Expected Output & Next Steps -->
+                <div class="details-grid">
+                    <div class="detail-section">
+                        <h4>Expected Result</h4>
+                        <ul id="expected-result-list" class="detail-list">
+                            <li class="detail-item">
+                                <span class="bullet-icon">📈</span>
+                                <span id="expected-result-text"></span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="detail-section">
+                        <h4>Next Action Strategy</h4>
+                        <ul id="next-step-list" class="detail-list">
+                            <li class="detail-item">
+                                <span class="bullet-icon">🎯</span>
+                                <span id="next-step-text"></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Deep Agronomist Explanation -->
+                <div class="explanation-section">
+                    <h4>Agronomist Assessment</h4>
+                    <p id="assessment-text"></p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 AgriMind Agent. Built for Google 5-Day AI Agents Capstone.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const btnDecide = document.getElementById('btn-decide');
+            const btnSimulate = document.getElementById('btn-simulate');
+            const btnReset = document.getElementById('btn-reset');
+            const farmForm = document.getElementById('farm-form');
+            
+            const resultsPlaceholder = document.getElementById('results-placeholder');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const resultsContent = document.getElementById('results-content');
+            const resultsPanel = document.getElementById('results-panel');
+
+            // Get form values as object
+            function getFormValues() {
+                return {
+                    day: parseInt(document.getElementById('day').value) || 0,
+                    money: parseInt(document.getElementById('money').value) || 0,
+                    water_level: parseInt(document.getElementById('water_level').value) || 0,
+                    soil_health: parseInt(document.getElementById('soil_health').value) || 0,
+                    pest_risk: parseInt(document.getElementById('pest_risk').value) || 0,
+                    crop_stage: document.getElementById('crop_stage').value,
+                    weather: document.getElementById('weather').value,
+                    market_price: document.getElementById('market_price').value,
+                    harvested: document.getElementById('harvested').checked
+                };
+            }
+
+            // Update form elements with new values
+            function setFormValues(state) {
+                document.getElementById('day').value = state.day;
+                document.getElementById('money').value = state.money;
+                document.getElementById('water_level').value = state.water_level;
+                document.getElementById('soil_health').value = state.soil_health;
+                document.getElementById('pest_risk').value = state.pest_risk;
+                document.getElementById('crop_stage').value = state.crop_stage;
+                document.getElementById('weather').value = state.weather;
+                document.getElementById('market_price').value = state.market_price;
+                document.getElementById('harvested').checked = state.harvested;
+            }
+
+            // Toggle active visual banner color
+            function updateBannerTheme(action) {
+                const banner = document.getElementById('action-banner');
+                banner.className = 'action-banner'; // Reset
+                banner.classList.add(`action-${action}`);
+            }
+
+            // Display decision results
+            function displayResult(decision) {
+                // Set text values
+                document.getElementById('action-value').innerText = decision.action.replace('_', ' ');
+                document.getElementById('confidence-value').innerText = `${Math.round(decision.confidence_score * 100)}%`;
+                document.getElementById('expected-result-text').innerText = decision.expected_result;
+                document.getElementById('next-step-text').innerText = decision.next_step;
+                document.getElementById('assessment-text').innerText = decision.agent_explanation;
+
+                // Update theme
+                updateBannerTheme(decision.action);
+
+                // Build Reasons list
+                const reasonsList = document.getElementById('reasons-list');
+                reasonsList.innerHTML = '';
+                decision.reasons.forEach(reason => {
+                    const li = document.createElement('li');
+                    li.className = 'detail-item';
+                    li.innerHTML = `<span class="bullet-icon" style="color:var(--primary);">✓</span> <span>${reason}</span>`;
+                    reasonsList.appendChild(li);
+                });
+
+                // Build Risks list
+                const risksList = document.getElementById('risks-list');
+                risksList.innerHTML = '';
+                decision.risks.forEach(risk => {
+                    const li = document.createElement('li');
+                    li.className = 'detail-item';
+                    li.innerHTML = `<span class="bullet-icon" style="color:var(--accent-red);">⚠</span> <span>${risk}</span>`;
+                    risksList.appendChild(li);
+                });
+
+                // Display main container
+                loadingSpinner.style.display = 'none';
+                resultsPlaceholder.style.display = 'none';
+                resultsContent.style.display = 'flex';
+            }
+
+            // Call POST /agent/decide
+            async function getDecision() {
+                resultsContent.style.display = 'none';
+                resultsPlaceholder.style.display = 'none';
+                loadingSpinner.style.display = 'flex';
+
+                const state = getFormValues();
+
+                try {
+                    const response = await fetch('/agent/decide', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(state)
+                    });
+                    
+                    if (!response.ok) throw new Error('API server returned error response');
+                    
+                    const decision = await response.json();
+                    displayResult(decision);
+                } catch (error) {
+                    console.error('Error fetching decision:', error);
+                    loadingSpinner.style.display = 'none';
+                    resultsPlaceholder.style.display = 'block';
+                    alert('Error reaching decision API. Check terminal logs.');
+                }
+            }
+
+            // Call POST /agent/simulate
+            async function runSimulationStep() {
+                resultsContent.style.display = 'none';
+                resultsPlaceholder.style.display = 'none';
+                loadingSpinner.style.display = 'flex';
+
+                const state = getFormValues();
+
+                try {
+                    const response = await fetch('/agent/simulate', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(state)
+                    });
+                    
+                    if (!response.ok) throw new Error('API server returned error response');
+                    
+                    const result = await response.json();
+                    
+                    // Display decision
+                    displayResult(result.decision);
+                    
+                    // Update form values to the next simulated state
+                    setFormValues(result.simulated_next_state);
+                    
+                    // Add subtle glow animation to the parameter inputs card to show change
+                    const inputsCard = document.querySelector('main > section:first-of-type');
+                    inputsCard.classList.remove('sim-transition');
+                    void inputsCard.offsetWidth; // Trigger reflow
+                    inputsCard.classList.add('sim-transition');
+                    
+                } catch (error) {
+                    console.error('Error simulating state:', error);
+                    loadingSpinner.style.display = 'none';
+                    resultsPlaceholder.style.display = 'block';
+                    alert('Error reaching simulation API. Check terminal logs.');
+                }
+            }
+
+            // Reset values to defaults
+            function resetForm() {
+                const defaults = {
+                    day: 1,
+                    money: 100,
+                    water_level: 40,
+                    soil_health: 55,
+                    pest_risk: 15,
+                    crop_stage: 'seed',
+                    weather: 'sunny',
+                    market_price: 'medium',
+                    harvested: false
+                };
+                setFormValues(defaults);
+                resultsContent.style.display = 'none';
+                loadingSpinner.style.display = 'none';
+                resultsPlaceholder.style.display = 'block';
+            }
+
+            btnDecide.addEventListener('click', getDecision);
+            btnSimulate.addEventListener('click', runSimulationStep);
+            btnReset.addEventListener('click', resetForm);
+        });
+    </script>
+</body>
+</html>
