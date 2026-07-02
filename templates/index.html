@@ -37,13 +37,15 @@
         </div>
     </header>
 
-    <nav class="tab-nav" aria-label="Main Navigation Tabs">
-        <button class="tab-btn active" data-tab="simulator">🚜 Farming Simulator</button>
-        <button class="tab-btn" data-tab="guide">📖 Crop Farming Guide</button>
-        <button class="tab-btn" data-tab="recommendation">💡 Customized Recommendation</button>
-    </nav>
+    <div class="app-container">
+        <nav class="tab-nav" aria-label="Main Navigation Tabs">
+            <button class="tab-btn active" data-tab="simulator">🚜 Farming Simulator</button>
+            <button class="tab-btn" data-tab="guide">📖 Crop Farming Guide</button>
+            <button class="tab-btn" data-tab="recommendation">💡 Customized Recommendation</button>
+        </nav>
 
-    <div id="tab-simulator" class="tab-content active">
+        <div class="tab-content-container">
+            <div id="tab-simulator" class="tab-content active">
         <main>
             <!-- Farm State Inputs Column -->
             <section class="glass-card" aria-label="Farm State Inputs">
@@ -471,6 +473,8 @@
                 </div>
             </section>
         </main>
+    </div>
+        </div>
     </div>
 
     <footer>
