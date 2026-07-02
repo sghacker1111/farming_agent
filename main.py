@@ -9,9 +9,15 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-from agent.schemas import FarmState, AgentDecision, SimulationResult
+from agent.schemas import (
+    FarmState, AgentDecision, SimulationResult,
+    CropGuide, CropRecommendationRequest, CropRecommendationResponse
+)
 from agent.engine import make_decision
 from agent.simulation import simulate_step
+from agent.crop_guide import load_crop_guides, get_crop_guide
+from agent.recommendation import get_crop_recommendation
+from fastapi import HTTPException, status
 
 app = FastAPI(
     title="AgriMind Agent",
@@ -77,6 +83,45 @@ async def simulate_endpoint(state: FarmState):
         current_state=state,
         simulated_next_state=next_state
     )
+
+
+@app.get("/crops")
+async def get_crops():
+    """
+    Returns a list of all available crops and their categories.
+    """
+    guides = load_crop_guides()
+    return [{"crop_name": g["crop_name"], "category": g["category"]} for g in guides]
+
+
+@app.get("/crops/{crop_name}", response_model=CropGuide)
+async def get_crop_guide_endpoint(crop_name: str):
+    """
+    Returns the complete farming guide for a specific crop.
+    """
+    guide, error = get_crop_guide(crop_name)
+    if error:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=error
+        )
+    return guide
+
+
+@app.post("/crops/recommend", response_model=CropRecommendationResponse)
+async def recommend_crop_endpoint(request: CropRecommendationRequest):
+    """
+    Accepts crop name and farm conditions, returning a customized farming plan.
+    """
+    try:
+        recommendation = get_crop_recommendation(request)
+        return recommendation
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+
 
 if __name__ == "__main__":
     # Get port from environment or default to 8080 for Cloud Run

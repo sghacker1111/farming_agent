@@ -27,9 +27,16 @@
         </div>
     </header>
 
-    <main>
-        <!-- Farm State Inputs Column -->
-        <section class="glass-card" aria-label="Farm State Inputs">
+    <nav class="tab-nav" aria-label="Main Navigation Tabs">
+        <button class="tab-btn active" data-tab="simulator">🚜 Farming Simulator</button>
+        <button class="tab-btn" data-tab="guide">📖 Crop Farming Guide</button>
+        <button class="tab-btn" data-tab="recommendation">💡 Customized Recommendation</button>
+    </nav>
+
+    <div id="tab-simulator" class="tab-content active">
+        <main>
+            <!-- Farm State Inputs Column -->
+            <section class="glass-card" aria-label="Farm State Inputs">
             <h2 class="card-title">🚜 Farm State Parameters</h2>
             <form id="farm-form">
                 <div class="form-grid">
@@ -190,6 +197,271 @@
             </div>
         </section>
     </main>
+    </div>
+
+    <!-- Tab 2: Crop Farming Guide -->
+    <div id="tab-guide" class="tab-content">
+        <main class="guide-layout">
+            <section class="glass-card">
+                <h2 class="card-title">📖 Select Crop Guide</h2>
+                <div class="search-bar-row">
+                    <div class="form-group">
+                        <label for="guide-crop-select">Select Crop</label>
+                        <select id="guide-crop-select" style="width: 100%;">
+                            <!-- Injected dynamically -->
+                        </select>
+                    </div>
+                    <div style="display: flex; align-items: flex-end; justify-content: center; font-weight: bold; color: var(--text-muted); font-size: 1.1rem; padding-bottom: 0.75rem;">OR</div>
+                    <div class="form-group">
+                        <label for="guide-crop-search">Search Crop Manually</label>
+                        <input type="text" id="guide-crop-search" placeholder="e.g. Rice, Tomato, Apple..." style="width: 100%;">
+                    </div>
+                    <button type="button" id="btn-get-guide" class="btn-primary" style="height: 45px; align-self: flex-end; margin-bottom: 3px;">
+                        <span>📖</span> Get Farming Guide
+                    </button>
+                </div>
+            </section>
+
+            <div id="guide-details-container" style="display: none;">
+                <div class="results-grid-3">
+                    <div class="glass-card">
+                        <h3 class="card-subtitle">🌱 Crop Overview</h3>
+                        <div class="guide-item-text"><strong>Category:</strong> <span id="guide-category"></span></div>
+                        <div class="guide-item-text"><strong>Climate:</strong> <span id="guide-climate"></span></div>
+                        <div class="guide-item-text"><strong>Soil:</strong> <span id="guide-soil"></span></div>
+                    </div>
+                    <div class="glass-card">
+                        <h3 class="card-subtitle">🚜 Land & Seed Prep</h3>
+                        <div class="guide-item-text"><strong>Land Prep:</strong> <span id="guide-land-prep"></span></div>
+                        <div class="guide-item-text"><strong>Seed Selection:</strong> <span id="guide-seed-selection"></span></div>
+                        <div class="guide-item-text"><strong>Seed Rate:</strong> <span id="guide-seed-rate"></span></div>
+                    </div>
+                    <div class="glass-card">
+                        <h3 class="card-subtitle">📅 Sowing & Spacing</h3>
+                        <div class="guide-item-text"><strong>Sowing Method:</strong> <span id="guide-sowing-method"></span></div>
+                        <div class="guide-item-text"><strong>Sowing Time:</strong> <span id="guide-sowing-time"></span></div>
+                        <div class="guide-item-text"><strong>Spacing:</strong> <span id="guide-spacing"></span></div>
+                        <div class="guide-item-text"><strong>Planting Steps:</strong> <span id="guide-planting-steps"></span></div>
+                    </div>
+                    <div class="glass-card">
+                        <h3 class="card-subtitle">💧 Irrigation & Water</h3>
+                        <div class="guide-item-text"><span id="guide-irrigation"></span></div>
+                    </div>
+                    <div class="glass-card">
+                        <h3 class="card-subtitle">🧪 Fertilizer & Manure</h3>
+                        <div class="guide-item-text"><strong>Manure & Fert:</strong> <span id="guide-manure"></span></div>
+                        <div class="guide-item-text"><strong>Organic Option:</strong> <span id="guide-organic-fertilizer"></span></div>
+                        <div class="guide-item-text"><strong>Chemical Option:</strong> <span id="guide-chemical-fertilizer"></span></div>
+                        <div class="guide-item-text"><strong>Stage Schedule:</strong> <span id="guide-fertilizer-schedule"></span></div>
+                    </div>
+                    <div class="glass-card">
+                        <h3 class="card-subtitle">🐛 Care & Management</h3>
+                        <div class="guide-item-text"><strong>Weed Control:</strong> <span id="guide-weed"></span></div>
+                        <div class="guide-item-text"><strong>Pests:</strong> <span id="guide-pest"></span></div>
+                        <div class="guide-item-text"><strong>Diseases:</strong> <span id="guide-disease"></span></div>
+                    </div>
+                    <div class="glass-card">
+                        <h3 class="card-subtitle">🌾 Harvest & Handling</h3>
+                        <div class="guide-item-text"><strong>Harvest Stage:</strong> <span id="guide-harvest-stage"></span></div>
+                        <div class="guide-item-text"><strong>Harvest Method:</strong> <span id="guide-harvest-method"></span></div>
+                        <div class="guide-item-text"><strong>Post-Harvest:</strong> <span id="guide-post-harvest"></span></div>
+                        <div class="guide-item-text"><strong>Expected Yield:</strong> <span id="guide-yield"></span></div>
+                    </div>
+                    <div class="glass-card warning-border">
+                        <h3 class="card-subtitle text-warn">⚠️ Safety & Mistakes</h3>
+                        <div class="guide-item-text"><strong>Common Mistakes:</strong> <span id="guide-mistakes"></span></div>
+                        <div class="guide-item-text"><strong>Safety Note:</strong> <span id="guide-safety"></span></div>
+                    </div>
+                    <div class="glass-card primary-border">
+                        <h3 class="card-subtitle text-primary">💡 Production Tips</h3>
+                        <div class="guide-item-text"><span id="guide-production-tips"></span></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Tab 3: Customized Recommendation -->
+    <div id="tab-recommendation" class="tab-content">
+        <main class="recommendation-layout">
+            <!-- Condition Inputs -->
+            <section class="glass-card">
+                <h2 class="card-title">💡 Farm Conditions</h2>
+                <form id="recommendation-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="rec-crop-select">Select Crop</label>
+                            <select id="rec-crop-select" required>
+                                <!-- Injected dynamically -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rec-land-size">Land Size</label>
+                            <input type="number" id="rec-land-size" step="0.1" min="0.1" value="1.0" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rec-land-unit">Land Unit</label>
+                            <select id="rec-land-unit" required>
+                                <option value="ropani">Ropani (Nepal Hills)</option>
+                                <option value="katha">Katha (Nepal Terai)</option>
+                                <option value="bigha">Bigha (Nepal Terai)</option>
+                                <option value="hectare" selected>Hectare</option>
+                                <option value="square_meter">Square Meter</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rec-soil-type">Soil Type</label>
+                            <select id="rec-soil-type" required>
+                                <option value="Clayey Loam">Clayey Loam</option>
+                                <option value="Sandy Loam">Sandy Loam</option>
+                                <option value="Silty Clay">Silty Clay</option>
+                                <option value="Alluvial Soil">Alluvial Soil</option>
+                                <option value="Red Laterite">Red Laterite</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rec-season">Season</label>
+                            <select id="rec-season" required>
+                                <option value="Monsoon / Rainy">Monsoon / Rainy</option>
+                                <option value="Winter / Dry">Winter / Dry</option>
+                                <option value="Spring / Summer">Spring / Summer</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rec-water-availability">Water Availability</label>
+                            <select id="rec-water-availability" required>
+                                <option value="low">Low (Rainfed)</option>
+                                <option value="medium" selected>Medium (Seasonal canal)</option>
+                                <option value="high">High (Year-round irrigation)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rec-farming-type">Farming Type</label>
+                            <select id="rec-farming-type" required>
+                                <option value="organic">Organic Only</option>
+                                <option value="chemical">Chemical Only</option>
+                                <option value="mixed" selected>Mixed (Integrated Pest/Nutrient)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rec-budget-level">Budget Level</label>
+                            <select id="rec-budget-level" required>
+                                <option value="low">Low (Frugal)</option>
+                                <option value="medium" selected>Medium (Standard)</option>
+                                <option value="high">High (High-investment)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rec-location">Location</label>
+                            <input type="text" id="rec-location" value="Nepal Hills (e.g. Kavre)" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="rec-experience">Experience Level</label>
+                            <select id="rec-experience" required>
+                                <option value="beginner" selected>Beginner (Guided mode)</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1.5rem;">
+                        <button type="button" id="btn-get-recommendation" class="btn-primary" style="width: 100%;">
+                            <span>💡</span> Get Customized Recommendation
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Output Report -->
+            <section class="glass-card" id="rec-results-panel">
+                <h2 class="card-title">💡 Customized Agronomist Plan</h2>
+                
+                <div id="rec-placeholder" class="results-placeholder">
+                    <div class="placeholder-icon">🌱</div>
+                    <p>Input your farm details and trigger the agronomist recommender to generate a tailored report.</p>
+                </div>
+
+                <div id="rec-spinner" class="spinner-container">
+                    <div class="spinner"></div>
+                    <p>AgriMind Recommender is analyzing land and climate inputs...</p>
+                </div>
+
+                <div id="rec-content" class="results-container" style="display: none;">
+                    <div id="rec-banner" class="action-banner action-harvest">
+                        <div class="action-info">
+                            <h3>Recommended Farming Method</h3>
+                            <div id="rec-val-method" class="action-val">-</div>
+                        </div>
+                    </div>
+
+                    <div class="rec-grid-2">
+                        <div class="detail-section">
+                            <h4>Scale-Calculated Inputs</h4>
+                            <div class="guide-item-text"><strong>Seed Estimate:</strong> <span id="rec-val-seed"></span></div>
+                            <div class="guide-item-text"><strong>Manure Estimate:</strong> <span id="rec-val-manure"></span></div>
+                            <div class="guide-item-text"><strong>Fertilizer Estimate:</strong> <span id="rec-val-fertilizer"></span></div>
+                        </div>
+
+                        <div class="detail-section">
+                            <h4>Farming Strategy</h4>
+                            <div class="guide-item-text"><strong>Irrigation:</strong> <span id="rec-val-irrigation"></span></div>
+                            <div class="guide-item-text"><strong>Expected Yield:</strong> <span id="rec-val-yield"></span></div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 0.5rem;" class="detail-section">
+                        <h4>Required Materials Checklist</h4>
+                        <ul id="rec-val-materials" class="detail-list">
+                            <!-- Injected -->
+                        </ul>
+                    </div>
+
+                    <div style="margin-top: 0.75rem;" class="detail-section">
+                        <h4>Tailored Step-by-Step Plan</h4>
+                        <div class="explanation-section" style="white-space: pre-line; background: rgba(0,0,0,0.15); margin-top: 0.25rem;">
+                            <p id="rec-val-plan"></p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 0.75rem;" class="detail-section">
+                        <h4>Pest & Disease Warnings</h4>
+                        <div class="explanation-section" style="border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05); margin-top: 0.25rem;">
+                            <p id="rec-val-pest" style="color:#f87171;"></p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 0.75rem;" class="detail-section">
+                        <h4>Production Improvement Tips</h4>
+                        <div class="explanation-section" style="border-color: rgba(16, 185, 129, 0.2); background: rgba(16, 185, 129, 0.05); margin-top: 0.25rem;">
+                            <p id="rec-val-tips" style="color:#34d399;"></p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 0.75rem;" class="detail-section">
+                        <h4>Safety & Extension Notes</h4>
+                        <div class="explanation-section" style="border-color: rgba(245, 158, 11, 0.2); background: rgba(245, 158, 11, 0.05); margin-top: 0.25rem;">
+                            <p id="rec-val-safety" style="color:#fbbf24;"></p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 1rem;" class="explanation-section">
+                        <h4>Agronomist Assessment Details</h4>
+                        <p id="rec-val-explanation"></p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
 
     <footer>
         <p>&copy; 2026 AgriMind Agent. Built for Google 5-Day AI Agents Capstone.</p>
@@ -197,6 +469,23 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Tab Toggling
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.dataset.tab;
+                    
+                    tabButtons.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.remove('active'));
+                    
+                    btn.classList.add('active');
+                    document.getElementById(`tab-${tabId}`).classList.add('active');
+                });
+            });
+
+            // Simulator logic
             const btnDecide = document.getElementById('btn-decide');
             const btnSimulate = document.getElementById('btn-simulate');
             const btnReset = document.getElementById('btn-reset');
@@ -205,9 +494,7 @@
             const resultsPlaceholder = document.getElementById('results-placeholder');
             const loadingSpinner = document.getElementById('loading-spinner');
             const resultsContent = document.getElementById('results-content');
-            const resultsPanel = document.getElementById('results-panel');
 
-            // Get form values as object
             function getFormValues() {
                 return {
                     day: parseInt(document.getElementById('day').value) || 0,
@@ -222,7 +509,6 @@
                 };
             }
 
-            // Update form elements with new values
             function setFormValues(state) {
                 document.getElementById('day').value = state.day;
                 document.getElementById('money').value = state.money;
@@ -235,26 +521,21 @@
                 document.getElementById('harvested').checked = state.harvested;
             }
 
-            // Toggle active visual banner color
             function updateBannerTheme(action) {
                 const banner = document.getElementById('action-banner');
-                banner.className = 'action-banner'; // Reset
+                banner.className = 'action-banner';
                 banner.classList.add(`action-${action}`);
             }
 
-            // Display decision results
             function displayResult(decision) {
-                // Set text values
                 document.getElementById('action-value').innerText = decision.action.replace('_', ' ');
                 document.getElementById('confidence-value').innerText = `${Math.round(decision.confidence_score * 100)}%`;
                 document.getElementById('expected-result-text').innerText = decision.expected_result;
                 document.getElementById('next-step-text').innerText = decision.next_step;
                 document.getElementById('assessment-text').innerText = decision.agent_explanation;
 
-                // Update theme
                 updateBannerTheme(decision.action);
 
-                // Build Reasons list
                 const reasonsList = document.getElementById('reasons-list');
                 reasonsList.innerHTML = '';
                 decision.reasons.forEach(reason => {
@@ -264,7 +545,6 @@
                     reasonsList.appendChild(li);
                 });
 
-                // Build Risks list
                 const risksList = document.getElementById('risks-list');
                 risksList.innerHTML = '';
                 decision.risks.forEach(risk => {
@@ -274,92 +554,60 @@
                     risksList.appendChild(li);
                 });
 
-                // Display main container
                 loadingSpinner.style.display = 'none';
                 resultsPlaceholder.style.display = 'none';
                 resultsContent.style.display = 'flex';
             }
 
-            // Call POST /agent/decide
             async function getDecision() {
                 resultsContent.style.display = 'none';
                 resultsPlaceholder.style.display = 'none';
                 loadingSpinner.style.display = 'flex';
-
-                const state = getFormValues();
-
                 try {
                     const response = await fetch('/agent/decide', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(state)
+                        body: JSON.stringify(getFormValues())
                     });
-                    
-                    if (!response.ok) throw new Error('API server returned error response');
-                    
-                    const decision = await response.json();
-                    displayResult(decision);
+                    if (!response.ok) throw new Error('API server error');
+                    displayResult(await response.json());
                 } catch (error) {
-                    console.error('Error fetching decision:', error);
+                    console.error(error);
                     loadingSpinner.style.display = 'none';
                     resultsPlaceholder.style.display = 'block';
-                    alert('Error reaching decision API. Check terminal logs.');
+                    alert('Error getting decision.');
                 }
             }
 
-            // Call POST /agent/simulate
             async function runSimulationStep() {
                 resultsContent.style.display = 'none';
                 resultsPlaceholder.style.display = 'none';
                 loadingSpinner.style.display = 'flex';
-
-                const state = getFormValues();
-
                 try {
                     const response = await fetch('/agent/simulate', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(state)
+                        body: JSON.stringify(getFormValues())
                     });
-                    
-                    if (!response.ok) throw new Error('API server returned error response');
-                    
+                    if (!response.ok) throw new Error('API server error');
                     const result = await response.json();
-                    
-                    // Display decision
                     displayResult(result.decision);
-                    
-                    // Update form values to the next simulated state
                     setFormValues(result.simulated_next_state);
                     
-                    // Add subtle glow animation to the parameter inputs card to show change
-                    const inputsCard = document.querySelector('main > section:first-of-type');
+                    const inputsCard = document.querySelector('#tab-simulator main > section:first-of-type');
                     inputsCard.classList.remove('sim-transition');
-                    void inputsCard.offsetWidth; // Trigger reflow
+                    void inputsCard.offsetWidth;
                     inputsCard.classList.add('sim-transition');
-                    
                 } catch (error) {
-                    console.error('Error simulating state:', error);
+                    console.error(error);
                     loadingSpinner.style.display = 'none';
                     resultsPlaceholder.style.display = 'block';
-                    alert('Error reaching simulation API. Check terminal logs.');
+                    alert('Error running simulation.');
                 }
             }
 
-            // Reset values to defaults
             function resetForm() {
-                const defaults = {
-                    day: 1,
-                    money: 100,
-                    water_level: 40,
-                    soil_health: 55,
-                    pest_risk: 15,
-                    crop_stage: 'seed',
-                    weather: 'sunny',
-                    market_price: 'medium',
-                    harvested: false
-                };
-                setFormValues(defaults);
+                setFormValues({day: 1, money: 100, water_level: 40, soil_health: 55, pest_risk: 15, crop_stage: 'seed', weather: 'sunny', market_price: 'medium', harvested: false});
                 resultsContent.style.display = 'none';
                 loadingSpinner.style.display = 'none';
                 resultsPlaceholder.style.display = 'block';
@@ -368,6 +616,185 @@
             btnDecide.addEventListener('click', getDecision);
             btnSimulate.addEventListener('click', runSimulationStep);
             btnReset.addEventListener('click', resetForm);
+
+
+            // Crop Farming Guide logic
+            const guideCropSelect = document.getElementById('guide-crop-select');
+            const guideCropSearch = document.getElementById('guide-crop-search');
+            const btnGetGuide = document.getElementById('btn-get-guide');
+            const guideDetailsContainer = document.getElementById('guide-details-container');
+
+            // Recommendation logic
+            const recCropSelect = document.getElementById('rec-crop-select');
+            const btnGetRec = document.getElementById('btn-get-recommendation');
+            const recPlaceholder = document.getElementById('rec-placeholder');
+            const recSpinner = document.getElementById('rec-spinner');
+            const recContent = document.getElementById('rec-content');
+
+            // Load available crops on startup
+            async function loadCrops() {
+                try {
+                    const res = await fetch('/crops');
+                    if (!res.ok) throw new Error('Failed to fetch crops list');
+                    const crops = await res.json();
+                    
+                    // Sort alphabetically
+                    crops.sort((a, b) => a.crop_name.localeCompare(b.crop_name));
+                    
+                    // Populate guide dropdown
+                    guideCropSelect.innerHTML = '';
+                    crops.forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.crop_name;
+                        opt.textContent = `${c.crop_name} (${c.category})`;
+                        guideCropSelect.appendChild(opt);
+                    });
+
+                    // Populate recommendation dropdown
+                    recCropSelect.innerHTML = '';
+                    crops.forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c.crop_name;
+                        opt.textContent = c.crop_name;
+                        recCropSelect.appendChild(opt);
+                    });
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+
+            loadCrops();
+
+            // Fetch specific crop guide
+            async function fetchCropGuide() {
+                // Determine crop name from search input or dropdown
+                let query = guideCropSearch.value.trim();
+                if (!query) {
+                    query = guideCropSelect.value;
+                }
+                
+                if (!query) return alert('Please select or search a crop name.');
+                
+                guideDetailsContainer.style.display = 'none';
+                
+                try {
+                    const res = await fetch(`/crops/${encodeURIComponent(query)}`);
+                    if (!res.ok) {
+                        const errDetails = await res.json();
+                        let msg = errDetails.detail?.error || 'Crop not found.';
+                        if (errDetails.detail?.suggestions && errDetails.detail.suggestions.length > 0) {
+                            msg += '\nDid you mean: ' + errDetails.detail.suggestions.join(', ') + '?';
+                        }
+                        throw new Error(msg);
+                    }
+                    
+                    const g = await res.json();
+                    
+                    // Populate DOM elements
+                    document.getElementById('guide-category').textContent = g.category;
+                    document.getElementById('guide-climate').textContent = g.suitable_climate;
+                    document.getElementById('guide-soil').textContent = g.suitable_soil;
+                    document.getElementById('guide-land-prep').textContent = g.land_preparation;
+                    document.getElementById('guide-seed-selection').textContent = g.seed_selection;
+                    document.getElementById('guide-seed-rate').textContent = g.seed_rate;
+                    document.getElementById('guide-sowing-method').textContent = g.nursery_or_direct_sowing;
+                    document.getElementById('guide-sowing-time').textContent = g.sowing_time;
+                    document.getElementById('guide-spacing').textContent = g.spacing;
+                    document.getElementById('guide-planting-steps').textContent = g.planting_steps;
+                    document.getElementById('guide-irrigation').textContent = g.irrigation_schedule;
+                    document.getElementById('guide-manure').textContent = g.manure_and_fertilizer;
+                    document.getElementById('guide-organic-fertilizer').textContent = g.organic_fertilizer_option;
+                    document.getElementById('guide-chemical-fertilizer').textContent = g.chemical_fertilizer_option;
+                    document.getElementById('guide-fertilizer-schedule').textContent = g.fertilizer_schedule_by_stage;
+                    document.getElementById('guide-weed').textContent = g.weed_management;
+                    document.getElementById('guide-pest').textContent = g.pest_management;
+                    document.getElementById('guide-disease').textContent = g.disease_management;
+                    document.getElementById('guide-harvest-stage').textContent = g.harvesting_stage;
+                    document.getElementById('guide-harvest-method').textContent = g.harvesting_method;
+                    document.getElementById('guide-post-harvest').textContent = g.post_harvest_handling;
+                    document.getElementById('guide-yield').textContent = g.expected_yield;
+                    document.getElementById('guide-mistakes').textContent = g.common_mistakes;
+                    document.getElementById('guide-safety').textContent = g.safety_note;
+                    document.getElementById('guide-production-tips').textContent = g.best_production_tips;
+                    
+                    // Show details
+                    guideDetailsContainer.style.display = 'block';
+                    
+                    // Trigger scroll down smoothly to view guide
+                    guideDetailsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } catch (err) {
+                    alert(err.message);
+                }
+            }
+
+            btnGetGuide.addEventListener('click', fetchCropGuide);
+
+            // Fetch custom recommendations
+            async function fetchRecommendation() {
+                recContent.style.display = 'none';
+                recPlaceholder.style.display = 'none';
+                recSpinner.style.display = 'flex';
+
+                const reqBody = {
+                    crop_name: recCropSelect.value,
+                    land_size: parseFloat(document.getElementById('rec-land-size').value) || 1.0,
+                    land_unit: document.getElementById('rec-land-unit').value,
+                    soil_type: document.getElementById('rec-soil-type').value,
+                    season: document.getElementById('rec-season').value,
+                    water_availability: document.getElementById('rec-water-availability').value,
+                    farming_type: document.getElementById('rec-farming-type').value,
+                    budget_level: document.getElementById('rec-budget-level').value,
+                    location: document.getElementById('rec-location').value,
+                    experience_level: document.getElementById('rec-experience').value
+                };
+
+                try {
+                    const res = await fetch('/crops/recommend', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(reqBody)
+                    });
+
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.detail || 'Error generating recommendation.');
+                    }
+
+                    const rec = await res.json();
+
+                    // Populate DOM
+                    document.getElementById('rec-val-method').innerText = rec.recommended_method;
+                    document.getElementById('rec-val-seed').innerText = rec.seed_quantity_estimate;
+                    document.getElementById('rec-val-manure').innerText = rec.manure_quantity_estimate;
+                    document.getElementById('rec-val-fertilizer').innerText = rec.fertilizer_quantity_estimate;
+                    document.getElementById('rec-val-irrigation').innerText = rec.irrigation_plan;
+                    document.getElementById('rec-val-yield').innerText = rec.expected_yield_note;
+                    document.getElementById('rec-val-plan').innerText = rec.step_by_step_plan;
+                    document.getElementById('rec-val-pest').innerText = rec.pest_disease_warning;
+                    document.getElementById('rec-val-tips').innerText = rec.production_improvement_tips;
+                    document.getElementById('rec-val-safety').innerText = rec.safety_note;
+                    document.getElementById('rec-val-explanation').innerText = rec.ai_explanation;
+
+                    // Materials list checklist
+                    const matsList = document.getElementById('rec-val-materials');
+                    matsList.innerHTML = '';
+                    rec.required_materials.forEach(mat => {
+                        const li = document.createElement('li');
+                        li.className = 'detail-item';
+                        li.innerHTML = `<span class="bullet-icon" style="color:var(--primary);">📦</span> <span>${mat}</span>`;
+                        matsList.appendChild(li);
+                    });
+
+                    recSpinner.style.display = 'none';
+                    recContent.style.display = 'flex';
+                } catch (err) {
+                    alert(err.message);
+                    recSpinner.style.display = 'none';
+                    recPlaceholder.style.display = 'block';
+                }
+            }
+
+            btnGetRec.addEventListener('click', fetchRecommendation);
         });
     </script>
 </body>

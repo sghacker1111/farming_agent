@@ -31,3 +31,67 @@ class SimulationResult(BaseModel):
     decision: AgentDecision = Field(..., description="The decision made by the agent for the current state")
     current_state: FarmState = Field(..., description="The initial state before taking action")
     simulated_next_state: FarmState = Field(..., description="The predicted state after taking the recommended action")
+
+
+# New crop-related schemas
+class CropGuide(BaseModel):
+    crop_name: str = Field(..., description="Name of the crop")
+    category: str = Field(..., description="Crop category (e.g. Cereal, Vegetable, Fruit)")
+    suitable_climate: str = Field(..., description="Optimal climate conditions")
+    suitable_soil: str = Field(..., description="Optimal soil conditions")
+    land_preparation: str = Field(..., description="Steps for land preparation")
+    seed_selection: str = Field(..., description="Guide to seed selection")
+    seed_rate: str = Field(..., description="Estimated seed rate per unit land")
+    nursery_or_direct_sowing: str = Field(..., description="Sowing method (nursery or direct)")
+    sowing_time: str = Field(..., description="Best time for sowing")
+    spacing: str = Field(..., description="Recommended plant spacing")
+    planting_steps: str = Field(..., description="Step-by-step planting instructions")
+    irrigation_schedule: str = Field(..., description="Irrigation recommendations")
+    manure_and_fertilizer: str = Field(..., description="General fertilizer/manure instructions")
+    organic_fertilizer_option: str = Field(..., description="Organic fertilization options")
+    chemical_fertilizer_option: str = Field(..., description="Chemical fertilization options")
+    fertilizer_schedule_by_stage: str = Field(..., description="Fertilizing timeline by growth stage")
+    weed_management: str = Field(..., description="Weed control guidelines")
+    pest_management: str = Field(..., description="Pest control guidelines")
+    disease_management: str = Field(..., description="Disease control guidelines")
+    best_production_tips: str = Field(..., description="Best practices for higher yield")
+    harvesting_stage: str = Field(..., description="Indicators for crop readiness")
+    harvesting_method: str = Field(..., description="Harvesting guidelines")
+    post_harvest_handling: str = Field(..., description="Post-harvest management")
+    expected_yield: str = Field(..., description="Expected crop yield ranges")
+    common_mistakes: str = Field(..., description="Common farming mistakes to avoid")
+    safety_note: str = Field(..., description="Safety precautions during farming operations")
+
+
+class FarmCondition(BaseModel):
+    crop_name: str = Field(..., description="Name of the crop to grow")
+    land_size: float = Field(..., description="Size of the land", gt=0.0)
+    land_unit: Literal["ropani", "katha", "bigha", "hectare", "square_meter"] = Field(..., description="Land measurement unit")
+    soil_type: str = Field(..., description="Type of soil (e.g. Clay, Loam, Sandy)")
+    season: str = Field(..., description="Current/target farming season")
+    water_availability: Literal["low", "medium", "high"] = Field(..., description="Water availability level")
+    farming_type: Literal["organic", "chemical", "mixed"] = Field(..., description="Farming methodology type")
+    budget_level: Literal["low", "medium", "high"] = Field(..., description="Available budget level")
+    location: str = Field(..., description="Geographical location")
+    experience_level: Literal["beginner", "intermediate", "advanced"] = Field(..., description="Farmer experience level")
+
+
+class CropRecommendationRequest(FarmCondition):
+    pass
+
+
+class CropRecommendationResponse(BaseModel):
+    crop_name: str = Field(..., description="Name of the crop")
+    recommended_method: str = Field(..., description="Recommended farming method (organic, chemical, mixed)")
+    step_by_step_plan: str = Field(..., description="Tailored step-by-step farming plan")
+    required_materials: List[str] = Field(..., description="Required materials for the plan")
+    seed_quantity_estimate: str = Field(..., description="Scaled seed quantity estimate")
+    manure_quantity_estimate: str = Field(..., description="Scaled manure/compost quantity estimate")
+    fertilizer_quantity_estimate: str = Field(..., description="Scaled chemical fertilizer estimate (if applicable)")
+    irrigation_plan: str = Field(..., description="Tailored irrigation guidelines")
+    pest_disease_warning: str = Field(..., description="Disease/pest warnings based on season/experience")
+    production_improvement_tips: str = Field(..., description="Yield improvement advice")
+    expected_yield_note: str = Field(..., description="Tailored expected yield description")
+    safety_note: str = Field(..., description="Critical agronomist safety warning")
+    ai_explanation: str = Field(..., description="Synthesis explanation of how this custom advice was generated")
+

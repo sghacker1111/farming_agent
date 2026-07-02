@@ -1,6 +1,6 @@
-# AgriMind Agent - Smart Farming AI Decision Agent
+# AgriMind Agent - Smart Farming AI Decision & Production Guide
 
-AgriMind Agent is an intelligent, full-stack decision-making agent built for modern smart farming. Engineered as a capstone project for the Google 5-Day AI Agents challenge, this application showcases how deterministic safety rules, dynamic Gemini-powered reasoning, and simulation-based planning come together to solve complex agriculture orchestration challenges.
+AgriMind Agent is an intelligent, full-stack decision-making agent and production guide system built for modern smart farming. Developed as a capstone project for the Google 5-Day AI Agents challenge, this application showcases how deterministic safety rules, dynamic Gemini-powered reasoning, scaled land calculations, and simulation-based planning come together to solve complex agriculture orchestration challenges.
 
 ---
 
@@ -8,18 +8,22 @@ AgriMind Agent is an intelligent, full-stack decision-making agent built for mod
 
 In modern agricultural operations, farmers must continuously analyze a complex, multi-dimensional matrix of variables—soil moisture, nutrient levels, weather patterns, pest threats, budget limitations, and market price volatility—to select the single best action. 
 
-**AgriMind Agent** automates this by behaving as a virtual agronomist. It receives farm state data, processes it through a hybrid pipeline (deterministic safety rules + Gemini LLM brain), and recommends the optimal action. It also simulates the next day's state, enabling users to run interactive "what-if" agricultural scenarios.
+**AgriMind Agent** automates this by behaving as a virtual agronomist. It provides two main modes of operations:
+1. **Farming Simulator & Decision Engine**: Evaluates current farm state and recommends the single best action, with safety overrides.
+2. **Crop Farming Guide & Tailored Recommender**: Exposes comprehensive, step-by-step farming guides for **21 crops** and dynamically generates custom agronomist recommendations scaled to user land parameters (with Nepal-specific unit conversions).
 
 ---
 
 ## ✨ Features
 
-- **Hybrid Decision Architecture**: Combines Pydantic schemas, strict deterministic rules (for safety and budget limitations), and Google Gemini reasoning for long-term planning.
-- **Safety-Critical Controller**: Ensures that the agent never proposes impossible actions, such as spending more capital than available or harvesting non-mature crops, and overrides unsafe AI suggestions.
-- **Structured LLM Outputs**: Leverages the official **Google GenAI SDK** (`google-genai`) to return typed Pydantic responses matching the `AgentDecision` schema.
-- **Robust Fallback**: Functions completely offline / without an API key using a comprehensive, priority-based deterministic fallback decision tree.
-- **Farming Simulator**: Predicts the next-state transitions of the farm based on selected actions and environmental degradation.
-- **Premium Web Dashboard**: Fully responsive, emerald-themed glassmorphic UI displaying parameters, recommendation details, and simulation steps.
+- **Hybrid Decision Architecture**: Combines Pydantic schemas, strict deterministic rules (for safety and budget limitations), and Google Gemini reasoning.
+- **Safety-Critical Controller**: Prevents impossible actions, such as spending more capital than available or harvesting non-mature crops, and overrides unsafe AI suggestions.
+- **Crop Farming Guide**: Step-by-step guides for 21 crops covering growing methods, seed rates, spacing, fertilization, weed/pest/disease care, expected yield, and storage.
+- **Customized Recommendation Engine**: Dynamically scales quantities of seeds, compost, and chemical fertilizers to the exact land size and unit, customized by experience level and organic vs. chemical preference.
+- **Nepal-Friendly Spacing & Units**: Supports local land units—**Ropani** (hills), **Katha** (Terai), **Bigha** (Terai), as well as standard Hectares and Square Meters.
+- **Structured LLM Outputs**: Leverages the official **Google GenAI SDK** (`google-genai`) to return typed Pydantic responses matching `AgentDecision` and `CropRecommendationResponse` schemas.
+- **Robust Fallback**: Functions completely offline/without an API key using local JSON databases and a priority-based deterministic scaling recommendation engine.
+- **Premium Web Dashboard**: Responsive, emerald-themed glassmorphic UI featuring tabbed navigation for Simulator, Crop Guide, and Custom Recommendation forms.
 
 ---
 
@@ -30,14 +34,19 @@ agrimind-agent/
 │
 ├── agent/
 │   ├── __init__.py
-│   ├── schemas.py          # Pydantic schemas (FarmState, AgentDecision, etc.)
+│   ├── schemas.py          # Pydantic schemas (FarmState, CropGuide, etc.)
 │   ├── rules.py            # Safety controller and deterministic fallback rules
-│   ├── gemini_brain.py     # Google GenAI SDK integration with structured outputs
+│   ├── gemini_brain.py     # Google GenAI SDK integration for decisions
+│   ├── crop_guide.py       # Crop guide matching and search algorithms
+│   ├── recommendation.py   # Scaled recommendation generator (Gemini + Fallback)
 │   ├── engine.py           # Coordinator managing Gemini calls & safety overrides
 │   └── simulation.py       # State-transition simulation logic
 │
+├── data/
+│   └── crop_guides.json    # Extensive database containing guide details for 21 crops
+│
 ├── static/
-│   └── style.css           # Custom CSS for dark-mode glassmorphism styling
+│   └── style.css           # Custom CSS for dark-mode glassmorphic styling & grids
 │
 ├── templates/
 │   └── index.html          # Interactive Jinja2 dashboard template
@@ -45,14 +54,26 @@ agrimind-agent/
 ├── tests/
 │   ├── __init__.py
 │   ├── test_agent_rules.py # Tests for possible actions, safety overrides, and fallback
-│   └── test_api.py         # Tests for FastAPI endpoints (/health, /decide, /simulate)
+│   ├── test_api.py         # Tests for FastAPI endpoints (/health, /decide, /simulate)
+│   └── test_crop_guide_api.py # Tests for crop list, guides, search, and recommendation
 │
+├── .env                    # Environment configuration file (secret)
 ├── .env.example            # Mock / reference env setup
 ├── .gitignore              # Ignores .env, virtualenvs, cache folders
+├── Dockerfile              # Docker containerization config
 ├── main.py                 # FastAPI application and uvicorn runner
 ├── requirements.txt        # Python dependency manifest
 └── README.md               # Extensive project documentation
 ```
+
+---
+
+## 🌽 Available Crop Guides (21 Crops)
+- **Cereals**: Rice / Paddy, Maize, Wheat
+- **Vegetables**: Potato, Tomato, Cauliflower, Cabbage, Onion, Cucumber, Pumpkin
+- **Spices**: Garlic, Ginger, Turmeric, Chili
+- **Legumes & Oilseeds**: Mustard, Lentil, Soybean
+- **Fruits**: Banana, Mango, Orange, Apple
 
 ---
 
@@ -119,63 +140,47 @@ pytest -v
 
 ## 📡 API Reference & Curl Examples
 
-### 1. Health Check
-Checks if the API is online.
-- **Endpoint**: `GET /health`
+### 1. Get Crops List
+- **Endpoint**: `GET /crops`
 - **Response**:
   ```json
-  {"status": "ok"}
+  [
+    {"crop_name": "Rice / Paddy", "category": "Cereal"},
+    {"crop_name": "Maize", "category": "Cereal"}
+  ]
   ```
 
-### 2. Get Decision
-Submits the farm state and returns the optimal action recommendation.
-- **Endpoint**: `POST /agent/decide`
-- **Request**:
-  ```bash
-  curl -X POST "http://localhost:8080/agent/decide" \
-       -H "Content-Type: application/json" \
-       -d '{
-         "day": 1,
-         "water_level": 25,
-         "soil_health": 70,
-         "money": 100,
-         "crop_stage": "growing",
-         "pest_risk": 15,
-         "weather": "sunny",
-         "market_price": "medium",
-         "harvested": false
-       }'
-  ```
+### 2. Get Crop Guide
+- **Endpoint**: `GET /crops/{crop_name}` (Case-insensitive)
 - **Response**:
   ```json
   {
-    "action": "irrigate",
-    "confidence_score": 0.85,
-    "reasons": ["Soil moisture level is critically low (25%)."],
-    "risks": ["Low soil moisture (25%)."],
-    "expected_result": "Soil moisture restored to safe levels.",
-    "next_step": "Monitor crop growth and pest threats.",
-    "agent_explanation": "Recommended irrigation because water levels dropped below optimal threshold under sunny weather."
+    "crop_name": "Tomato",
+    "category": "Vegetable",
+    "suitable_climate": "Warm-season crop...",
+    "suitable_soil": "Well-drained sandy loam...",
+    "expected_yield": "25 to 40 tons per hectare...",
+    "safety_note": "Always wash harvested tomatoes..."
   }
   ```
 
-### 3. Run Simulation Step
-Evaluates the decision and returns the simulated next state of the farm.
-- **Endpoint**: `POST /agent/simulate`
+### 3. Get Customized Recommendation
+- **Endpoint**: `POST /crops/recommend`
 - **Request**:
   ```bash
-  curl -X POST "http://localhost:8080/agent/simulate" \
+  curl -X POST "http://localhost:8080/crops/recommend" \
        -H "Content-Type: application/json" \
        -d '{
-         "day": 5,
-         "water_level": 60,
-         "soil_health": 80,
-         "money": 15,
-         "crop_stage": "mature",
-         "pest_risk": 5,
-         "weather": "sunny",
-         "market_price": "high",
-         "harvested": false
+         "crop_name": "Rice / Paddy",
+         "land_size": 2.5,
+         "land_unit": "ropani",
+         "soil_type": "Clayey Loam",
+         "season": "Monsoon / Rainy",
+         "water_availability": "high",
+         "farming_type": "organic",
+         "budget_level": "medium",
+         "location": "Kavre, Nepal",
+         "experience_level": "beginner"
        }'
   ```
 
@@ -183,18 +188,18 @@ Evaluates the decision and returns the simulated next state of the farm.
 
 ## ☁️ Deploying to Google Cloud Run
 
-Deploying to Google Cloud Run takes only a few commands. Ensure you have the `gcloud` CLI installed and authenticated to your GCP project.
+Deploying to Google Cloud Run takes only a few commands. Ensure you have the `gcloud` CLI installed and authenticated.
 
 ```bash
 # 1. Configure the GCP project ID
 gcloud config set project YOUR_PROJECT_ID
 
-# 2. Build the image and deploy to Cloud Run using Buildpacks
+# 2. Build and deploy using Google Cloud Build / Buildpacks
 gcloud run deploy agrimind-agent \
     --source . \
-    --region us-central1 \
+    --region asia-south1 \
     --allow-unauthenticated \
-    --set-env-vars GEMINI_API_KEY="YOUR_ACTUAL_GEMINI_API_KEY"
+    --set-secrets GEMINI_API_KEY=GEMINI_API_KEY:latest
 ```
 
 ---
@@ -204,21 +209,23 @@ gcloud run deploy agrimind-agent \
 To push the project to your GitHub repository:
 
 ```bash
-# Initialize git repository
-git init
+# Verify status
+git status
 
 # Add all files to staging area
 git add .
 
-# Create the initial commit
-git commit -m "feat: init AgriMind smart farming agent with FastAPI, Gemini SDK & interactive simulation UI"
-
-# Link to remote repository
-git remote add origin https://github.com/sghacker1111/farming_agent
-
-# Rename branch to main
-git branch -M main
+# Create a commit
+git commit -m "Add crop farming guide and production recommendation features"
 
 # Push code to GitHub
-git push -u origin main
+git push
 ```
+
+---
+
+## ⚠️ Agriculture Safety Note & Disclaimer
+
+Do not claim that one fertilizer quantity is perfect for every place. **Exact fertilizer and pesticide quantity depends on soil test, climate, crop variety, land condition, and local agriculture office recommendations.** 
+
+Ensure proper protective gear (mask, gloves) when handling chemical fertilizers or spraying pesticides. Keep all agro-chemicals out of reach of children and animals.
