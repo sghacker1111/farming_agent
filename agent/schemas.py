@@ -96,6 +96,22 @@ class CropRecommendationResponse(BaseModel):
     ai_explanation: str = Field(..., description="Synthesis explanation of how this custom advice was generated")
 
 
+class AskAIRequest(BaseModel):
+    question: str = Field(..., description="Farmer's direct question for the Ask AI assistant", min_length=3)
+    context: Literal["general", "crop", "simulator", "disaster"] = Field(
+        "general", description="Optional topic context selected in the web app"
+    )
+    location: str = Field("Nepal", description="Optional location for localized farming or disaster guidance")
+
+
+class AskAIResponse(BaseModel):
+    answer: str = Field(..., description="Direct answer to the farmer's question")
+    suggested_actions: List[str] = Field(..., description="Short follow-up actions the farmer can take")
+    related_crops: List[str] = Field(..., description="Crop names found or relevant to the answer")
+    safety_note: str = Field(..., description="Important safety or uncertainty note")
+    source: Literal["gemini", "local_fallback"] = Field(..., description="Whether the answer came from Gemini or local fallback logic")
+
+
 class DisasterIncident(BaseModel):
     disaster_type: Literal["flood", "earthquake", "cyclone", "road_accident", "landslide"] = Field(
         ..., description="The type of emergency or natural disaster for Disaster AI to assess"
@@ -115,4 +131,3 @@ class DisasterResponse(BaseModel):
     immediate_action_steps: List[str] = Field(..., description="Urgent step-by-step safety measures to take right now")
     emergency_contacts: List[str] = Field(..., description="Critical emergency phone numbers and hotlines")
     assessment_summary: str = Field(..., description="Summary explanation and advice from the AI assistant")
-

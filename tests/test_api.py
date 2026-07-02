@@ -19,6 +19,7 @@ def test_home_endpoint():
     response = client.get("/")
     assert response.status_code == 200
     assert "AgriMind Agent" in response.text
+    assert "Ask AI" in response.text
     assert "Disaster AI" in response.text
     assert "Emergency Response & Disaster Assistant" in response.text
     assert "<form" in response.text

@@ -12,18 +12,19 @@ load_dotenv()
 from agent.schemas import (
     FarmState, AgentDecision, SimulationResult,
     CropGuide, CropRecommendationRequest, CropRecommendationResponse,
-    DisasterIncident, DisasterResponse
+    AskAIRequest, AskAIResponse, DisasterIncident, DisasterResponse
 )
 from agent.engine import make_decision
 from agent.simulation import simulate_step
 from agent.crop_guide import load_crop_guides, get_crop_guide
 from agent.recommendation import get_crop_recommendation
+from agent.ask_ai import get_ask_ai_answer
 from agent.disaster import get_disaster_recommendation
 from fastapi import HTTPException, status
 
 app = FastAPI(
     title="AgriMind Agent",
-    description="Smart Farming AI Decision Agent with crop guidance, recommendations, simulation, and Disaster AI emergency assistance.",
+    description="Smart Farming AI Decision Agent with Ask AI chat, crop guidance, recommendations, simulation, and Disaster AI emergency assistance.",
     version="1.0.0"
 )
 
@@ -123,6 +124,23 @@ async def recommend_crop_endpoint(request: CropRecommendationRequest):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)
         )
+
+
+@app.post("/ask-ai", response_model=AskAIResponse)
+async def ask_ai_endpoint(request: AskAIRequest):
+    """
+    Accepts a direct farmer question and returns an instant Ask AI answer.
+    """
+    try:
+        answer = get_ask_ai_answer(request)
+        return answer
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to generate Ask AI answer: {str(e)}"
+        )
+
+
 @app.post("/disaster/assist", response_model=DisasterResponse)
 async def disaster_assist_endpoint(request: DisasterIncident):
     """

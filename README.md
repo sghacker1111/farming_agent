@@ -12,9 +12,10 @@ Farmers often need quick answers for questions like:
 - Is the crop ready to harvest or should I wait?
 - How much seed, manure, compost, or fertilizer is needed for my land size?
 - What is the correct spacing, sowing time, irrigation plan, pest control plan, and harvest method for a crop?
+- Can I ask a direct question and get an instant AI answer?
 - During a flood, earthquake, cyclone, landslide, or accident, where are possible shelters, roads, medical help, and emergency supplies?
 
-AgriMind Agent provides one dashboard with farming simulation, crop instruction, customized production recommendations, and Disaster AI emergency response assistance.
+AgriMind Agent provides one dashboard with direct Ask AI chat, farming simulation, crop instruction, customized production recommendations, and Disaster AI emergency response assistance.
 
 ## Web App Features
 
@@ -22,6 +23,7 @@ AgriMind Agent provides one dashboard with farming simulation, crop instruction,
 
 The home tab introduces the full farming assistant and shows the main modules:
 
+- Ask AI
 - Farming Simulator
 - Crop Farming Guide
 - Customized Recommendation
@@ -29,7 +31,34 @@ The home tab introduces the full farming assistant and shows the main modules:
 
 It also includes a supported crop list and important safety disclaimers for fertilizer and pesticide usage.
 
-### 2. Farming Simulator
+### 2. Ask AI Direct Chat
+
+Ask AI is a direct chat feature for instant farmer questions. It is designed for quick answers when the farmer does not want to open the full crop guide or recommendation form.
+
+Inputs:
+
+- Question type: general, crop, simulator, or disaster
+- Location
+- Farmer question
+
+Example questions:
+
+- How much seed and spacing is needed for tomato?
+- When should I irrigate rice in the monsoon season?
+- What should I do if pest risk is high in my maize field?
+- What should I do during a flood near Kathmandu?
+
+Outputs:
+
+- Direct answer
+- Suggested actions
+- Related crops
+- Safety note
+- Answer source: Gemini AI or local knowledge fallback
+
+If `GEMINI_API_KEY` is configured, Ask AI uses Gemini for flexible direct answers. If no API key is available, it still answers instantly using the local crop guide database and Disaster AI fallback logic.
+
+### 3. Farming Simulator
 
 The simulator lets a farmer enter the current farm condition and ask the agent for the best next action.
 
@@ -67,7 +96,7 @@ Supported actions:
 
 The simulator also includes a "Run Simulation Step" workflow that applies the decision and predicts the next farm state.
 
-### 3. Crop Farming Guide
+### 4. Crop Farming Guide
 
 The Crop Farming Guide provides detailed instructions for 21 crops. Each crop guide includes:
 
@@ -98,7 +127,7 @@ The Crop Farming Guide provides detailed instructions for 21 crops. Each crop gu
 
 The guide search supports exact matching, case-insensitive matching, and partial crop names such as "rice" or "paddy" for "Rice / Paddy".
 
-### 4. Customized Crop Recommendation
+### 5. Customized Crop Recommendation
 
 The recommendation module creates a tailored farming plan for the farmer's exact land size and situation.
 
@@ -140,7 +169,7 @@ Outputs:
 
 If `GEMINI_API_KEY` is configured, the app asks Gemini for a structured recommendation. If Gemini is unavailable or no API key is configured, the app uses its local rule-based agronomist engine.
 
-### 5. Disaster AI - Emergency Response and Disaster Assistant
+### 6. Disaster AI - Emergency Response and Disaster Assistant
 
 Disaster AI helps farmers and communities during emergencies.
 
@@ -235,6 +264,7 @@ agent/
   gemini_brain.py     Gemini decision engine for simulator actions
   engine.py           Decision coordinator combining Gemini and safety rules
   simulation.py       Farm state transition simulator
+  ask_ai.py           Direct Ask AI chat engine with Gemini and local fallback
   crop_guide.py       Crop guide loading, lookup, and search
   recommendation.py   Crop recommendation engine with Gemini and fallback logic
   disaster.py         Disaster AI emergency response engine
@@ -259,6 +289,7 @@ agrimind-agent/
     schemas.py
     rules.py
     gemini_brain.py
+    ask_ai.py
     crop_guide.py
     recommendation.py
     disaster.py
@@ -273,6 +304,7 @@ agrimind-agent/
   tests/
     __init__.py
     test_agent_rules.py
+    test_ask_ai.py
     test_api.py
     test_crop_guide_api.py
     test_disaster.py
@@ -379,6 +411,7 @@ The test suite covers:
 
 - Health endpoint
 - Home page rendering
+- Ask AI direct answer endpoint
 - Agent decision endpoint
 - Simulation endpoint
 - Crop list endpoint
@@ -402,6 +435,30 @@ Response:
   "status": "ok"
 }
 ```
+
+### Ask AI Direct Chat
+
+```http
+POST /ask-ai
+```
+
+Example request:
+
+```json
+{
+  "question": "How much seed and spacing is needed for tomato?",
+  "context": "crop",
+  "location": "Kavre, Nepal"
+}
+```
+
+Response includes:
+
+- answer
+- suggested_actions
+- related_crops
+- safety_note
+- source
 
 ### Agent Decision
 
@@ -512,6 +569,18 @@ Response includes:
 - assessment_summary
 
 ## Curl Examples
+
+### Ask AI
+
+```bash
+curl -X POST "http://localhost:8080/ask-ai" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "question": "How much seed and spacing is needed for tomato?",
+    "context": "crop",
+    "location": "Kavre, Nepal"
+  }'
+```
 
 ### Crop recommendation
 

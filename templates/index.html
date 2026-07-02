@@ -40,6 +40,7 @@
     <div class="app-container">
         <nav class="tab-nav" aria-label="Main Navigation Tabs">
             <button class="tab-btn active" data-tab="home">🏠 Home</button>
+            <button class="tab-btn" data-tab="ask-ai">💬 Ask AI</button>
             <button class="tab-btn" data-tab="simulator">🚜 Farming Simulator</button>
             <button class="tab-btn" data-tab="guide">📖 Crop Farming Guide</button>
             <button class="tab-btn" data-tab="recommendation">💡 Customized Recommendation</button>
@@ -60,6 +61,12 @@
 
                     <!-- Main Pillars of AgriMind -->
                     <div class="results-grid-4" style="margin-bottom: 2rem;">
+                        <div class="glass-card">
+                            <h3 class="card-subtitle">💬 Direct Ask AI</h3>
+                            <p class="guide-item-text">
+                                Ask any farming, crop guide, simulator, fertilizer, pest, harvest, or disaster question and get an instant answer through AI with local fallback support.
+                            </p>
+                        </div>
                         <div class="glass-card">
                             <h3 class="card-subtitle">🚜 Interactive Simulator</h3>
                             <p class="guide-item-text">
@@ -148,6 +155,98 @@
                         <p class="guide-item-text" style="margin-top: 0.5rem;">
                             Always consult your local agriculture officer or cooperative before large-scale application, and wear protective equipment (gloves, mask) when handling agrochemicals.
                         </p>
+                    </section>
+                </main>
+            </div>
+
+            <!-- Tab 1: Ask AI -->
+            <div id="tab-ask-ai" class="tab-content">
+                <main class="ask-layout">
+                    <section class="glass-card ask-input-panel">
+                        <h2 class="card-title">💬 Ask AI</h2>
+                        <p class="guide-item-text" style="margin-bottom: 1rem; color: var(--text-muted);">
+                            Ask a direct question about crop production, fertilizer, pests, irrigation, harvesting, simulator decisions, or emergency response.
+                        </p>
+
+                        <div class="ask-quick-row" aria-label="Example Ask AI questions">
+                            <button type="button" class="ask-chip" data-question="How much seed and spacing is needed for tomato?">Tomato spacing</button>
+                            <button type="button" class="ask-chip" data-question="When should I irrigate rice in the monsoon season?">Rice irrigation</button>
+                            <button type="button" class="ask-chip" data-question="What should I do if pest risk is high in my maize field?">Pest risk</button>
+                            <button type="button" class="ask-chip" data-question="What should I do during a flood near Kathmandu?">Flood help</button>
+                        </div>
+
+                        <form id="ask-ai-form">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="ask-context">Question Type</label>
+                                    <select id="ask-context" required>
+                                        <option value="general">General Farming</option>
+                                        <option value="crop">Crop Guide</option>
+                                        <option value="simulator">Simulator Decision</option>
+                                        <option value="disaster">Disaster Help</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="ask-location">Location</label>
+                                    <input type="text" id="ask-location" value="Nepal" placeholder="e.g. Kathmandu, Kavre, Pokhara">
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="ask-question">Your Question</label>
+                                    <textarea id="ask-question" rows="6" placeholder="Ask something like: How much fertilizer should I use for potato in 2 ropani?" required></textarea>
+                                </div>
+                            </div>
+
+                            <button type="button" id="btn-ask-ai" class="btn-primary ask-submit">
+                                <span>💬</span> Ask AI Now
+                            </button>
+                            <p class="ask-helper-text">
+                                For best answers, include crop name, land size, location, season, and the problem you want to solve.
+                            </p>
+                        </form>
+                    </section>
+
+                    <section class="glass-card ask-answer-panel" aria-label="Ask AI Answer">
+                        <h2 class="card-title">⚡ Instant Answer</h2>
+
+                        <div id="ask-placeholder" class="results-placeholder">
+                            <div class="placeholder-icon">💬</div>
+                            <p>Type a question or choose an example to get an instant farming answer.</p>
+                        </div>
+
+                        <div id="ask-spinner" class="spinner-container" style="display: none;">
+                            <div class="spinner"></div>
+                            <p>Ask AI is reading farm knowledge and preparing a direct answer...</p>
+                        </div>
+
+                        <div id="ask-content" class="ask-results" style="display: none;">
+                            <div class="ask-answer-header">
+                                <div>
+                                    <h3>Answer</h3>
+                                    <span id="ask-source-badge" class="ask-source-badge">-</span>
+                                </div>
+                            </div>
+
+                            <div id="ask-answer-text" class="ask-answer-text"></div>
+
+                            <div class="rec-grid-2" style="margin-top: 1rem;">
+                                <div class="detail-section">
+                                    <h4>Suggested Actions</h4>
+                                    <ul id="ask-actions-list" class="detail-list"></ul>
+                                </div>
+
+                                <div class="detail-section">
+                                    <h4>Related Crops</h4>
+                                    <ul id="ask-crops-list" class="detail-list"></ul>
+                                </div>
+                            </div>
+
+                            <div class="explanation-section ask-safety-note">
+                                <h4>Safety Note</h4>
+                                <p id="ask-safety-text"></p>
+                            </div>
+                        </div>
                     </section>
                 </main>
             </div>
@@ -1130,6 +1229,99 @@
             }
 
             btnGetRec.addEventListener('click', fetchRecommendation);
+
+            // Ask AI Direct Chat Logic
+            const btnAskAi = document.getElementById('btn-ask-ai');
+            const askQuestion = document.getElementById('ask-question');
+            const askContext = document.getElementById('ask-context');
+            const askLocation = document.getElementById('ask-location');
+            const askPlaceholder = document.getElementById('ask-placeholder');
+            const askSpinner = document.getElementById('ask-spinner');
+            const askContent = document.getElementById('ask-content');
+            const askAnswerText = document.getElementById('ask-answer-text');
+            const askSourceBadge = document.getElementById('ask-source-badge');
+            const askActionsList = document.getElementById('ask-actions-list');
+            const askCropsList = document.getElementById('ask-crops-list');
+            const askSafetyText = document.getElementById('ask-safety-text');
+
+            function renderAskList(listEl, items, fallbackText, icon, color) {
+                listEl.innerHTML = '';
+                const safeItems = Array.isArray(items) && items.length > 0 ? items : [fallbackText];
+                safeItems.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'detail-item';
+
+                    const iconSpan = document.createElement('span');
+                    iconSpan.className = 'bullet-icon';
+                    iconSpan.style.color = color;
+                    iconSpan.textContent = icon;
+
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = item;
+
+                    li.appendChild(iconSpan);
+                    li.appendChild(textSpan);
+                    listEl.appendChild(li);
+                });
+            }
+
+            async function fetchAskAiAnswer() {
+                const question = askQuestion.value.trim();
+                if (!question) {
+                    alert('Please type your question first.');
+                    askQuestion.focus();
+                    return;
+                }
+
+                askContent.style.display = 'none';
+                askPlaceholder.style.display = 'none';
+                askSpinner.style.display = 'flex';
+
+                try {
+                    const res = await fetch('/ask-ai', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            question,
+                            context: askContext.value,
+                            location: askLocation.value.trim() || 'Nepal'
+                        })
+                    });
+
+                    if (!res.ok) {
+                        const err = await res.json();
+                        throw new Error(err.detail || 'Error getting Ask AI answer.');
+                    }
+
+                    const data = await res.json();
+                    askAnswerText.textContent = data.answer;
+                    askSourceBadge.textContent = data.source === 'gemini' ? 'Gemini AI Answer' : 'Local Knowledge Answer';
+                    askSafetyText.textContent = data.safety_note;
+                    renderAskList(askActionsList, data.suggested_actions, 'Ask a more specific question with crop, land size, location, and season.', '✓', 'var(--primary)');
+                    renderAskList(askCropsList, data.related_crops, 'No specific crop detected.', '🌱', 'var(--accent)');
+
+                    askSpinner.style.display = 'none';
+                    askContent.style.display = 'flex';
+                } catch (err) {
+                    alert(err.message);
+                    askSpinner.style.display = 'none';
+                    askPlaceholder.style.display = 'block';
+                }
+            }
+
+            document.querySelectorAll('.ask-chip').forEach(chip => {
+                chip.addEventListener('click', () => {
+                    askQuestion.value = chip.dataset.question || '';
+                    askQuestion.focus();
+                });
+            });
+
+            btnAskAi.addEventListener('click', fetchAskAiAnswer);
+            askQuestion.addEventListener('keydown', event => {
+                if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+                    fetchAskAiAnswer();
+                }
+            });
 
             // Disaster Assistant Logic
             const btnGetDisaster = document.getElementById('btn-get-disaster-assist');
