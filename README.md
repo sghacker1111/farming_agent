@@ -651,10 +651,11 @@ gcloud run deploy agrimind-agent \
   --source . \
   --region asia-south1 \
   --allow-unauthenticated \
-  --set-env-vars GOOGLE_GENAI_USE_VERTEXAI=true,GOOGLE_CLOUD_PROJECT=YOUR_PROJECT_ID,GOOGLE_CLOUD_LOCATION=us-central1,GEMINI_MODEL=gemini-2.5-flash
+  "--set-env-vars=GOOGLE_GENAI_USE_VERTEXAI=true,GOOGLE_CLOUD_PROJECT=YOUR_PROJECT_ID,GOOGLE_CLOUD_LOCATION=us-central1,GEMINI_MODEL=gemini-2.5-flash"
 ```
 
 Cloud Run provides the `PORT` environment variable automatically, so do not set `PORT` manually during deployment.
+On PowerShell, keep the whole `--set-env-vars=...` value quoted so the variables are passed separately.
 
 For API-key deployment, configure `GEMINI_API_KEY` or `GOOGLE_API_KEY` as a secret or secure environment variable instead. For service-account deployment, grant the Cloud Run runtime service account `roles/aiplatform.user`.
 
