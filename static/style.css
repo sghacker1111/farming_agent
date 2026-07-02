@@ -698,3 +698,51 @@ footer {
     color: var(--primary);
 }
 
+/* Header Weather & Time Widget */
+.header-widget-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    padding: 0.4rem 1rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-family: var(--font-body);
+}
+
+@media (max-width: 768px) {
+    .header-widget-container {
+        display: none; /* Hide on small screens to save space */
+    }
+}
+
+.widget-item {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    color: var(--text-main);
+}
+
+#widget-time {
+    font-family: monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary);
+}
+
+.widget-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.widget-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+

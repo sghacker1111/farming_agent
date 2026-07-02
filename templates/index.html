@@ -14,6 +14,16 @@
             <span class="logo-icon">🌱</span>
             <h1>AgriMind Agent</h1>
         </div>
+
+        <!-- Weather & Time Widget -->
+        <div class="header-widget-container" id="weather-time-widget">
+            <span class="widget-item" id="widget-location">📍 Kathmandu, NP</span>
+            <span class="widget-item" id="widget-time">🕒 00:00:00</span>
+            <span class="widget-item" id="widget-date">📅 Loading Date...</span>
+            <span class="widget-item" id="widget-temp">🌡️ --°C</span>
+            <button type="button" id="btn-change-location" class="widget-btn" title="Change Location">✏️</button>
+        </div>
+
         <div>
             {% if api_key_configured %}
             <span id="api-status-badge" class="api-badge">
@@ -464,7 +474,7 @@
     </div>
 
     <footer>
-        <p>&copy; 2026 AgriMind Agent. Built for Google 5-Day AI Agents Capstone.</p>
+        <p>&copy; 2026 AgriMind Agent. Built for Farming Developed by Sunil Gotame.</p>
     </footer>
 
     <script>
@@ -484,6 +494,96 @@
                     document.getElementById(`tab-${tabId}`).classList.add('active');
                 });
             });
+
+            // Live Weather & Time Widget Logic
+            let clockInterval;
+            function startClock(timezone) {
+                if (clockInterval) clearInterval(clockInterval);
+                
+                const timeEl = document.getElementById('widget-time');
+                const dateEl = document.getElementById('widget-date');
+                
+                function update() {
+                    const now = new Date();
+                    try {
+                        // Update time in HH:MM:SS format
+                        timeEl.innerText = '🕒 ' + now.toLocaleTimeString('en-US', {
+                            timeZone: timezone,
+                            hour12: false,
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        });
+                        
+                        // Update date
+                        dateEl.innerText = '📅 ' + now.toLocaleDateString('en-US', {
+                            timeZone: timezone,
+                            weekday: 'short',
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric'
+                        });
+                    } catch (e) {
+                        console.error("Timezone error:", e);
+                        timeEl.innerText = '🕒 ' + now.toLocaleTimeString();
+                        dateEl.innerText = '📅 ' + now.toLocaleDateString();
+                    }
+                }
+                update();
+                clockInterval = setInterval(update, 1000);
+            }
+
+            async function updateWeatherAndTime(cityQuery) {
+                const locationEl = document.getElementById('widget-location');
+                const tempEl = document.getElementById('widget-temp');
+                
+                try {
+                    // Fetch Geocoding
+                    const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(cityQuery)}&count=1&language=en&format=json`);
+                    if (!geoRes.ok) throw new Error("Geocoding failed");
+                    
+                    const geoData = await geoRes.json();
+                    if (!geoData.results || geoData.results.length === 0) {
+                        alert(`Location '${cityQuery}' not found.`);
+                        return;
+                    }
+                    
+                    const loc = geoData.results[0];
+                    const lat = loc.latitude;
+                    const lon = loc.longitude;
+                    const timezone = loc.timezone || "Asia/Kathmandu";
+                    const name = loc.name;
+                    const country = loc.country_code || "NP";
+                    
+                    locationEl.innerText = `📍 ${name}, ${country.toUpperCase()}`;
+                    startClock(timezone);
+                    
+                    // Fetch Weather
+                    const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m&timezone=${encodeURIComponent(timezone)}`);
+                    if (!weatherRes.ok) throw new Error("Weather failed");
+                    
+                    const weatherData = await weatherRes.json();
+                    if (weatherData.current && weatherData.current.temperature_2m !== undefined) {
+                        tempEl.innerText = `🌡️ ${weatherData.current.temperature_2m} °C`;
+                    } else {
+                        tempEl.innerText = `🌡️ --°C`;
+                    }
+                } catch (err) {
+                    console.error("Widget load error:", err);
+                    tempEl.innerText = `🌡️ Error`;
+                }
+            }
+
+            // Bind Location button
+            document.getElementById('btn-change-location').addEventListener('click', () => {
+                const newCity = prompt("Enter City Name (e.g., Kathmandu, Pokhara, New York, London):");
+                if (newCity && newCity.trim().length > 0) {
+                    updateWeatherAndTime(newCity.trim());
+                }
+            });
+
+            // Initialize with Kathmandu, Nepal
+            updateWeatherAndTime("Kathmandu");
 
             // Simulator logic
             const btnDecide = document.getElementById('btn-decide');
